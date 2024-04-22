@@ -1,14 +1,15 @@
-"use client";
+"use client"
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
-import Header from "@/components/header/header";
+import Navbar from "@/components/navbar/Navbar";
+import Sidebar from "@/components/sidebar/Sidebar";
+import { Grid, GridItem } from "@chakra-ui/react";
 
 const AuthLayout = ({ children }) => {
   const session = useSession();
   const router = useRouter();
 
-  console.log(session);
   useEffect(() => {
     // Verificar el estado de la sesión y redirigir si es necesario
     if (session.status === "unauthenticated") {
@@ -17,10 +18,32 @@ const AuthLayout = ({ children }) => {
   }, [session.status, router]);
 
   // Renderizar los hijos solo si la sesión está autenticada
-  return children != null & session.status === "authenticated" ? (
+  return session.status === "authenticated" ? (
     <>
-      <Header/>
-      {children}
+      <Grid
+        templateRows="auto 1fr" // Navbar y luego el resto del espacio para los otros componentes
+        templateColumns="220px 1fr" // El Sidebar y luego el espacio para los otros componentes
+        height="100vh"
+      >
+        <GridItem rowSpan={1} colSpan={2}>
+          {/* El Navbar ocupa toda la primera fila */}
+          <Navbar />
+        </GridItem>
+        <GridItem rowSpan={2} colSpan={1} height="100%" overflowY="auto">
+          {/* El Sidebar ocupa toda la primera columna */}
+          <Sidebar />
+        </GridItem>
+        <GridItem
+          rowSpan={1}
+          colSpan={1}
+          overflowY="auto"
+          overflowX="auto"
+          maxHeight="100vh"
+          maxWidth="100vw"
+        >
+          {children}
+        </GridItem>
+      </Grid>
     </>
   ) : null;
 };

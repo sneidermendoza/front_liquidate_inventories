@@ -1,0 +1,36 @@
+body {
+    margin: 0px;
+    padding: 0px;
+}
+
+/* Estilos para la barra de desplazamiento */
+.scrollable {
+    overflow-x: auto;
+    /* Barras de desplazamiento horizontal */
+    overflow-y: auto;
+    /* Barras de desplazamiento vertical */
+    scrollbar-width: thin;
+    /* Ancho de la barra de desplazamiento */
+    scrollbar-color: rgb(29, 19, 119) rgb(255, 255, 255);
+    /* Color de la barra de desplazamiento */
+}
+
+/* Estilos específicos para WebKit (Safari y Chrome) */
+.scrollable::-webkit-scrollbar {
+    width: 8px;
+    /* Ancho de la barra de desplazamiento */
+    height: 8px;
+    /* Altura de la barra de desplazamiento */
+}
+
+.scrollable::-webkit-scrollbar-thumb {
+    background-color: rgb(29, 19, 119) !important;
+    border-radius: 10px !important;
+    /* Aumenta el radio de borde para más redondez */
+}
+
+.scrollable::-webkit-scrollbar-track {
+    background-color: rgb(255, 255, 255);
+    border-radius: 10px !important;
+    /* Añade redondez al lugar donde corre la barra */
+}
