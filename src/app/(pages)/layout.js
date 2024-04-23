@@ -2,8 +2,8 @@
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
-import Navbar from "@/components/navbar/Navbar";
-import Sidebar from "@/components/sidebar/Sidebar";
+import Navbar from "@/components/navbarComponents/Navbar";
+import Sidebar from "@/components/sidebarComponents/Sidebar";
 import { Grid, GridItem } from "@chakra-ui/react";
 
 const AuthLayout = ({ children }) => {

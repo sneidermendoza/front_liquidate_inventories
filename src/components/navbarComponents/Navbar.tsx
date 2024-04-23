@@ -1,7 +1,6 @@
-import { Box, Button, Flex, Heading, Spacer } from '@chakra-ui/react'
-import React from 'react'
+import { Box, Button, Flex, Heading, Spacer } from "@chakra-ui/react";
+import React from "react";
 import { signOut } from "next-auth/react";
-
 
 const Navbar = () => {
   return (
@@ -11,6 +10,7 @@ const Navbar = () => {
       </Heading>
       <Spacer />
       <Button
+        colorScheme="blue"
         w="80px"
         h="40px"
         color="white"
@@ -18,10 +18,10 @@ const Navbar = () => {
         rounded={10}
         onClick={() => signOut()}
       >
-        Sing out
+        Sign out
       </Button>
     </Flex>
   );
-}
+};
 
-export default Navbar
+export default Navbar;

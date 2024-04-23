@@ -2,7 +2,7 @@ import React from 'react'
 
 const Option = () => {
   return (
-    <div>Option</div>
+    <div>hola raul </div>
   )
 }
 

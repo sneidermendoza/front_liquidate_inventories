@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
 import Swal from "sweetalert2";
+import ProductsCreate from '@/components/ProductsComponents/ProductsCreate';
 import {
   Card,
   CardBody,
@@ -17,13 +18,18 @@ import {
   Th,
   Thead,
   Tr,
-  Td
+  Td,
+  Spacer,
+  Box,
+  Button,
 } from "@chakra-ui/react";
 
 const Products = () => {
   const { data: session } = useSession();
   const [isLoading, setIsLoading] = useState(false);
   const [dataResponse, setDataResponse] = useState();
+  const [MeasureUnits, setMeasureUnits] = useState();
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const token = session.user.token;
   const apiUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
   const headers = {
@@ -70,11 +76,41 @@ const Products = () => {
     }
   };
 
+  const dataMeasureUnits = async () => {
+    try {
+      const response = await fetch(apiUrl + "measure_units/", {
+        method: "GET",
+        headers: headers,
+      });
+      const data = await response.json();
+      if (data.status != 200) {
+        Swal.fire({
+          position: "center",
+          icon: "error",
+          title: data.detail,
+          showConfirmButton: false,
+          timer: 3000,
+        });
+      } else {
+        setMeasureUnits(data.data);
+      }
+    } catch (error) {
+      setIsLoading(false);
+      Swal.fire({
+        position: "center",
+        icon: "error",
+        title: data.detail,
+        showConfirmButton: false,
+        timer: 3000,
+      });
+    }
+  };
+
   useEffect(() => {
     dataProduct();
+    dataMeasureUnits();
   }, []);
 
-  console.log("todo good con la data", dataResponse);
 
   return (
     <Flex direction="column" h="100%">
@@ -100,8 +136,22 @@ const Products = () => {
         </Flex>
       )}
       <Card h="90vh">
-        <CardHeader>
-          <Heading size="lg">Dashboard</Heading>
+        <CardHeader
+          display="flex"
+          justifyContent="space-between"
+          alignItems="center"
+        >
+          <Heading fontSize={20}>Productos</Heading>
+          <Button
+            colorScheme="blue"
+            bg="blue.900"
+            fontSize={13}
+            h={10}
+            w={170}
+            onClick={() => setIsModalOpen(true)}
+          >
+            Crear Nuevos productos
+          </Button>
         </CardHeader>
         <CardBody h="90%" overflow="auto" className="scrollable">
           <TableContainer>
@@ -141,6 +191,11 @@ const Products = () => {
           <Text fontSize={10}> By: SMS Correo: Mariasol0304@gmail.com</Text>
         </CardFooter>
       </Card>
+      <ProductsCreate
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        measureUnits={MeasureUnits}
+      />
     </Flex>
   );
 };
