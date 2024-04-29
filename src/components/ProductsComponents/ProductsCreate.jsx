@@ -27,8 +27,12 @@ const ProductsCreate = ({ isOpen, onClose, measureUnits }) => {
     measureUnit: "",
   });
 
+  const url = "https://api-liquidate-inventories.onrender.com/api/product/"
+  const token = "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE0NDk2OTU4LCJpYXQiOjE3MTQ0MTA1NTgsImp0aSI6IjM3ZWNkZjIxZjc4ZTQ3NjhhZjgzNzZhOTY1ZjY1ZWE5IiwidXNlcl9pZCI6MX0.59j0nRfHtyNNrW182Ar10QHnXYxk07jGxF4F4dLjAP4"
+  
   const handleChange = (e) => {
     const { name, value } = e.target;
+    console.log(e.target.value)
     setFormData({
       ...formData,
       [name]: value,
@@ -36,10 +40,37 @@ const ProductsCreate = ({ isOpen, onClose, measureUnits }) => {
   };
 
   const handleSubmit = () => {
-    console.log(formData);
+    const opciones = {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json' ,
+        'Authorization' : token
+      },
+      body: JSON.stringify(formData) 
+    };
+    
+
+    fetch(url, opciones)
+      .then(response => {
+        
+        if (response.ok) {
+          return response.json(); 
+        }
+        throw new Error('Error en la solicitud');
+      })
+      .then(data => {
+        console.log('Respuesta:', formData);
+      })
+      .catch(error => {
+        console.error('Error:', formData); 
+      });
   };
 
-  console.log('estoy en el create',measureUnits);
+  const prueba = () => { 
+    console.log(formData)
+  }
+
+ 
 
   return (
     <Modal isOpen={isOpen} onClose={onClose} size="xl">
@@ -52,7 +83,7 @@ const ProductsCreate = ({ isOpen, onClose, measureUnits }) => {
             <FormControl gridColumn="span 1">
               <FormLabel>Código</FormLabel>
               <Input
-                type="text"
+                type="number"
                 name="code"
                 value={formData.code}
                 onChange={handleChange}
@@ -102,6 +133,7 @@ const ProductsCreate = ({ isOpen, onClose, measureUnits }) => {
           </Grid>
         </ModalBody>
         <ModalFooter>
+          <Button onClick={prueba}>hola</Button>
           <Flex justify="space-between" w="100%">
             <Button colorScheme="blue" onClick={handleSubmit}>
               Crear
