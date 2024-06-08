@@ -1,5 +1,5 @@
 "use client";
-import React,{ useState } from "react";
+import React, { useState } from "react";
 import {
   Modal,
   ModalOverlay,
@@ -22,13 +22,12 @@ import { useSession } from "next-auth/react";
 import { apiRequest } from "@/services/fetchService";
 import Swal from "sweetalert2";
 
-const ProductsCreate = ({ isOpen, onClose, measureUnits, reloadProducts }) => {
+const OptionCreate = ({ isOpen, onClose, measureUnits, reloadProducts }) => {
   const [formData, setFormData] = useState({
-    code: "",
     name: "",
     description: "",
-    price: "",
-    measureUnit: "",
+    link: "",
+    icon: "",
   });
   const { data: session } = useSession();
   const token = session.user.token;
@@ -46,16 +45,15 @@ const ProductsCreate = ({ isOpen, onClose, measureUnits, reloadProducts }) => {
     setIsLoading(true);
 
     const data = {
-      code: formData.code ? parseInt(formData.code, 10) : null,
       name: formData.name,
       description: formData.description || null,
-      price: formData.price,
-      measure_units: parseInt(formData.measureUnit, 10),
+      link: formData.link || null,
+      icon: formData.icon || null,
     };
 
     try {
       const response = await apiRequest({
-        endpoint: "product/",
+        endpoint: "options/",
         method: "POST",
         jsonBody: data,
         token: token,
@@ -111,19 +109,10 @@ const ProductsCreate = ({ isOpen, onClose, measureUnits, reloadProducts }) => {
       )}
       <ModalOverlay />
       <ModalContent>
-        <ModalHeader>Agregar Nuevo Producto</ModalHeader>
+        <ModalHeader>Agregar Nueva Opcion</ModalHeader>
         <ModalCloseButton />
         <ModalBody>
           <Grid templateColumns="repeat(2, 1fr)" gap={4}>
-            <FormControl gridColumn="span 1">
-              <FormLabel>Código</FormLabel>
-              <Input
-                type="number"
-                name="code"
-                value={formData.code}
-                onChange={handleChange}
-              />
-            </FormControl>
             <FormControl gridColumn="span 1">
               <FormLabel>Nombre</FormLabel>
               <Input
@@ -131,37 +120,30 @@ const ProductsCreate = ({ isOpen, onClose, measureUnits, reloadProducts }) => {
                 name="name"
                 value={formData.name}
                 onChange={handleChange}
-                maxLength={150}
+              />
+            </FormControl>
+            <FormControl gridColumn="span 1">
+              <FormLabel>Link</FormLabel>
+              <Input
+                type="text"
+                name="link"
+                value={formData.link}
+                onChange={handleChange}
+                maxLength={30}
                 minLength={1}
                 isRequired
               />
             </FormControl>
             <FormControl gridColumn="span 1">
-              <FormLabel>Precio</FormLabel>
+              <FormLabel>Icon</FormLabel>
               <Input
-                type="number"
-                name="price"
-                value={formData.price}
+                type="text"
+                name="icon"
+                maxLength={30}
+                minLength={1}
+                value={formData.icon}
                 onChange={handleChange}
-                isRequired
               />
-            </FormControl>
-            <FormControl gridColumn="span 1">
-              <FormLabel>Unidad de Medida</FormLabel>
-              <Select
-                name="measureUnit"
-                value={formData.measureUnit}
-                onChange={handleChange}
-                isRequired
-              >
-                <option value="">Seleccione una unidad</option>
-                {Array.isArray(measureUnits) &&
-                  measureUnits.map((unit, index) => (
-                    <option key={unit.id} value={unit.id}>
-                      {unit.name}
-                    </option>
-                  ))}
-              </Select>
             </FormControl>
             <FormControl gridColumn="span 2">
               <FormLabel>Descripción</FormLabel>
@@ -190,4 +172,4 @@ const ProductsCreate = ({ isOpen, onClose, measureUnits, reloadProducts }) => {
   );
 };
 
-export default ProductsCreate;
+export default OptionCreate;

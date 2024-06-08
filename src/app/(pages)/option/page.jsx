@@ -1,27 +1,43 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
-import ProductsCreate from "@/components/ProductsComponents/ProductsCreate";
-import ProductsEdit from "@/components/ProductsComponents/ProductsEdit";
-import {Card,CardBody,CardFooter,CardHeader,Flex,Heading,Spinner,Table,TableContainer,Tbody,Text,Th,Thead,Tr,Td,Button} from "@chakra-ui/react";
+import OptionCreate from "@/components/Option/OptionCreate";
+import OptionEdit from "@/components/Option/OptionEdit";
+import {
+  Card,
+  CardBody,
+  CardFooter,
+  CardHeader,
+  Flex,
+  Heading,
+  Spinner,
+  Table,
+  TableContainer,
+  Tbody,
+  Text,
+  Th,
+  Thead,
+  Tr,
+  Td,
+  Button,
+} from "@chakra-ui/react";
 import { EditIcon, DeleteIcon } from "@chakra-ui/icons";
 import { fetchData } from "@/utils/fetchData";
 import { handleDelete } from "@/utils/handleDelete";
 
-const Products = () => {
+const Option = () => {
   const { data: session } = useSession();
   const [isLoading, setIsLoading] = useState(false);
   const [dataResponse, setDataResponse] = useState();
-  const [MeasureUnits, setMeasureUnits] = useState();
   const [isModalOpenCreate, setIsModalOpenCreate] = useState(false);
   const [isModalOpenEdit, setIsModalOpenEdit] = useState(false);
-  const [product, setProduct] = useState();
+  const [optionSeletct, setOptionSeletct] = useState();
   const token = session.user.token;
 
-  const dataProduct = async () => {
+  const dataOption = async () => {
     setIsLoading(true);
     const data = await fetchData({
-      endpoint: "product/",
+      endpoint: "options/",
       token: token,
       showAlert: true,
     });
@@ -31,36 +47,24 @@ const Products = () => {
     setIsLoading(false);
   };
 
-  const dataMeasureUnits = async () => {
-    const data = await fetchData({
-      endpoint: "measure_units/",
-      token: token,
-      showAlert: false,
-    });
-    if (data) {
-      setMeasureUnits(data);
-    }
-  };
-
-  const handleEditClick = (product) => {
-    setProduct(product);
+  const handleEditClick = (option) => {
+    setOptionSeletct(option);
     setIsModalOpenEdit(true);
   };
 
-  const handleDeleteClick = async (productId) => {
+  const handleDeleteClick = async (optionid) => {
     setIsLoading(true);
     await handleDelete({
-      endpoint: "product/",
+      endpoint: "options/",
       token: token,
-      elementId: productId,
-      callback: dataProduct,
+      elementId: optionid,
+      callback: dataOption,
     });
     setIsLoading(false);
   };
 
   useEffect(() => {
-    dataProduct();
-    dataMeasureUnits();
+    dataOption();
   }, []);
 
   return (
@@ -92,7 +96,7 @@ const Products = () => {
           justifyContent="space-between"
           alignItems="center"
         >
-          <Heading fontSize={20}>Productos</Heading>
+          <Heading fontSize={20}>Opciones De Menu</Heading>
           <Button
             colorScheme="blue"
             bg="blue.900"
@@ -101,7 +105,7 @@ const Products = () => {
             w={170}
             onClick={() => setIsModalOpenCreate(true)}
           >
-            Crear Nuevos productos
+            Crear Nuevas Opciones
           </Button>
         </CardHeader>
         <CardBody h="90%" overflow="auto" className="scrollable">
@@ -109,31 +113,29 @@ const Products = () => {
             <Table variant="simple">
               <Thead>
                 <Tr>
-                  <Th fontSize={12}>Codigo</Th>
                   <Th fontSize={12}>Nombre</Th>
                   <Th fontSize={12}>Descripcion</Th>
-                  <Th fontSize={12}>Unidad De Medida</Th>
-                  <Th fontSize={12}>Precio</Th>
+                  <Th fontSize={12}>Link</Th>
+                  <Th fontSize={12}>Icon</Th>
                   <Th fontSize={12}>Opciones</Th>
                 </Tr>
               </Thead>
               <Tbody>
                 {dataResponse ? (
-                  dataResponse.map((product, index) => (
+                  dataResponse.map((option, index) => (
                     <Tr key={index}>
-                      <Td fontSize={12}>{product.code}</Td>
-                      <Td fontSize={12}>{product.name}</Td>
-                      <Td fontSize={12}>{product.description}</Td>
-                      <Td fontSize={12}>{product.measure_units_name}</Td>
-                      <Td fontSize={12}>{product.price}</Td>
+                      <Td fontSize={12}>{option.name}</Td>
+                      <Td fontSize={12}>{option.description}</Td>
+                      <Td fontSize={12}>{option.link}</Td>
+                      <Td fontSize={12}>{option.icon}</Td>
                       <Td fontSize={12}>
                         <EditIcon
                           marginLeft={5}
-                          onClick={() => handleEditClick(product)}
+                          onClick={() => handleEditClick(option)}
                         />
                         <DeleteIcon
                           marginLeft={1}
-                          onClick={() => handleDeleteClick(product.id)}
+                          onClick={() => handleDeleteClick(option.id)}
                         />
                       </Td>
                     </Tr>
@@ -153,21 +155,19 @@ const Products = () => {
           <Text fontSize={10}> By: SMS Correo: Mariasol0304@gmail.com</Text>
         </CardFooter>
       </Card>
-      <ProductsCreate
+      <OptionCreate
         isOpen={isModalOpenCreate}
         onClose={() => setIsModalOpenCreate(false)}
-        measureUnits={MeasureUnits}
-        reloadProducts={dataProduct}
+        reloadProducts={dataOption}
       />
-      <ProductsEdit
+      <OptionEdit
         isOpen={isModalOpenEdit}
         onClose={() => setIsModalOpenEdit(false)}
-        measureUnits={MeasureUnits}
-        reloadProducts={dataProduct}
-        product={product}
+        reloadProducts={dataOption}
+        option={optionSeletct}
       />
     </Flex>
   );
 };
 
-export default Products;
+export default Option;

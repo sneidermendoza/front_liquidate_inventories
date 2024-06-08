@@ -1,5 +1,5 @@
 "use client";
-import React,{ useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Modal,
   ModalOverlay,
@@ -22,7 +22,13 @@ import { useSession } from "next-auth/react";
 import { apiRequest } from "@/services/fetchService";
 import Swal from "sweetalert2";
 
-const ProductsCreate = ({ isOpen, onClose, measureUnits, reloadProducts }) => {
+const ProductsEdit = ({
+  isOpen,
+  onClose,
+  product,
+  measureUnits,
+  reloadProducts,
+}) => {
   const [formData, setFormData] = useState({
     code: "",
     name: "",
@@ -33,6 +39,18 @@ const ProductsCreate = ({ isOpen, onClose, measureUnits, reloadProducts }) => {
   const { data: session } = useSession();
   const token = session.user.token;
   const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    if (product) {
+      setFormData({
+        code: product.code,
+        name: product.name,
+        description: product.description,
+        price: product.price,
+        measureUnit: product.measure_units,
+      });
+    }
+  }, [product]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -55,16 +73,17 @@ const ProductsCreate = ({ isOpen, onClose, measureUnits, reloadProducts }) => {
 
     try {
       const response = await apiRequest({
-        endpoint: "product/",
-        method: "POST",
+        endpoint: `product/${product.id}/`,
+        method: "PUT",
         jsonBody: data,
         token: token,
       });
-      if (response.status != 201) {
+
+      if (response.status !== 200) {
         Swal.fire({
           position: "center",
           icon: "error",
-          title: response.error,
+          title: response.detail || "Error al actualizar el producto",
           showConfirmButton: false,
           timer: 3000,
         });
@@ -73,7 +92,7 @@ const ProductsCreate = ({ isOpen, onClose, measureUnits, reloadProducts }) => {
         Swal.fire({
           position: "center",
           icon: "success",
-          title: response.message,
+          title: "Producto actualizado con éxito",
           showConfirmButton: false,
           timer: 1500,
         });
@@ -82,7 +101,15 @@ const ProductsCreate = ({ isOpen, onClose, measureUnits, reloadProducts }) => {
         onClose();
       }
     } catch (error) {
-      console.error("Error submitting product:", error);
+      console.error("Error updating product:", error);
+      Swal.fire({
+        position: "center",
+        icon: "error",
+        title: "Error al actualizar el producto",
+        showConfirmButton: false,
+        timer: 3000,
+      });
+      setIsLoading(false);
     }
   };
 
@@ -111,7 +138,7 @@ const ProductsCreate = ({ isOpen, onClose, measureUnits, reloadProducts }) => {
       )}
       <ModalOverlay />
       <ModalContent>
-        <ModalHeader>Agregar Nuevo Producto</ModalHeader>
+        <ModalHeader>Editar Producto</ModalHeader>
         <ModalCloseButton />
         <ModalBody>
           <Grid templateColumns="repeat(2, 1fr)" gap={4}>
@@ -156,7 +183,7 @@ const ProductsCreate = ({ isOpen, onClose, measureUnits, reloadProducts }) => {
               >
                 <option value="">Seleccione una unidad</option>
                 {Array.isArray(measureUnits) &&
-                  measureUnits.map((unit, index) => (
+                  measureUnits.map((unit) => (
                     <option key={unit.id} value={unit.id}>
                       {unit.name}
                     </option>
@@ -178,7 +205,7 @@ const ProductsCreate = ({ isOpen, onClose, measureUnits, reloadProducts }) => {
         <ModalFooter>
           <Flex justify="space-between" w="100%">
             <Button colorScheme="blue" onClick={handleSubmit}>
-              Crear
+              Guardar
             </Button>
             <Button colorScheme="red" onClick={onClose}>
               Cancelar
@@ -190,4 +217,4 @@ const ProductsCreate = ({ isOpen, onClose, measureUnits, reloadProducts }) => {
   );
 };
 
-export default ProductsCreate;
+export default ProductsEdit;
