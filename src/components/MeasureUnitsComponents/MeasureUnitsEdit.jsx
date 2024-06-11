@@ -22,35 +22,26 @@ import { useSession } from "next-auth/react";
 import { apiRequest } from "@/services/fetchService";
 import Swal from "sweetalert2";
 
-const ProductsEdit = ({
+const MeasureUnitsEdit = ({
   isOpen,
   onClose,
-  product,
   measureUnits,
-  reloadProducts,
+  reloadMeasureUnits,
 }) => {
   const [formData, setFormData] = useState({
-    code: "",
-    name: "",
-    description: "",
-    price: "",
-    measureUnit: "",
+    name: ""
   });
   const { data: session } = useSession();
   const token = session.user.token;
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
-    if (product) {
+    if (measureUnits) {
       setFormData({
-        code: product.code,
-        name: product.name,
-        description: product.description,
-        price: product.price,
-        measureUnit: product.measure_units,
+        name: measureUnits.name,
       });
     }
-  }, [product]);
+  }, [measureUnits]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -64,16 +55,12 @@ const ProductsEdit = ({
     setIsLoading(true);
 
     const data = {
-      code: formData.code ? parseInt(formData.code, 10) : null,
-      name: formData.name,
-      description: formData.description || null,
-      price: formData.price,
-      measure_units: parseInt(formData.measureUnit, 10),
+      name: formData.name
     };
 
     try {
       const response = await apiRequest({
-        endpoint: `product/${product.id}/`,
+        endpoint: `measure_units/${measureUnits.id}/`,
         method: "PUT",
         jsonBody: data,
         token: token,
@@ -97,7 +84,7 @@ const ProductsEdit = ({
           timer: 1500,
         });
         setIsLoading(false);
-        reloadProducts();
+        reloadMeasureUnits();
         onClose();
       }
     } catch (error) {
@@ -143,15 +130,6 @@ const ProductsEdit = ({
         <ModalBody>
           <Grid templateColumns="repeat(2, 1fr)" gap={4}>
             <FormControl gridColumn="span 1">
-              <FormLabel>Código</FormLabel>
-              <Input
-                type="number"
-                name="code"
-                value={formData.code}
-                onChange={handleChange}
-              />
-            </FormControl>
-            <FormControl gridColumn="span 1">
               <FormLabel>Nombre</FormLabel>
               <Input
                 type="text"
@@ -161,43 +139,6 @@ const ProductsEdit = ({
                 maxLength={150}
                 minLength={1}
                 isRequired
-              />
-            </FormControl>
-            <FormControl gridColumn="span 1">
-              <FormLabel>Precio</FormLabel>
-              <Input
-                type="number"
-                name="price"
-                value={formData.price}
-                onChange={handleChange}
-                isRequired
-              />
-            </FormControl>
-            <FormControl gridColumn="span 1">
-              <FormLabel>Unidad de Medida</FormLabel>
-              <Select
-                name="measureUnit"
-                value={formData.measureUnit}
-                onChange={handleChange}
-                isRequired
-              >
-                <option value="">Seleccione una unidad</option>
-                {Array.isArray(measureUnits) &&
-                  measureUnits.map((unit) => (
-                    <option key={unit.id} value={unit.id}>
-                      {unit.name}
-                    </option>
-                  ))}
-              </Select>
-            </FormControl>
-            <FormControl gridColumn="span 2">
-              <FormLabel>Descripción</FormLabel>
-              <Textarea
-                name="description"
-                value={formData.description}
-                onChange={handleChange}
-                maxLength={250}
-                minLength={1}
               />
             </FormControl>
           </Grid>
@@ -217,4 +158,4 @@ const ProductsEdit = ({
   );
 };
 
-export default ProductsEdit;
+export default MeasureUnitsEdit;

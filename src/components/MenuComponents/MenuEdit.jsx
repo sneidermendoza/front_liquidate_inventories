@@ -22,35 +22,30 @@ import { useSession } from "next-auth/react";
 import { apiRequest } from "@/services/fetchService";
 import Swal from "sweetalert2";
 
-const ProductsEdit = ({
+const MenuEdit = ({
   isOpen,
   onClose,
-  product,
-  measureUnits,
+  menu,
+  role,
+  option,
   reloadProducts,
 }) => {
   const [formData, setFormData] = useState({
-    code: "",
-    name: "",
-    description: "",
-    price: "",
-    measureUnit: "",
+    role: "",
+    option: "",
   });
   const { data: session } = useSession();
   const token = session.user.token;
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
-    if (product) {
+    if (menu) {
       setFormData({
-        code: product.code,
-        name: product.name,
-        description: product.description,
-        price: product.price,
-        measureUnit: product.measure_units,
+        role: menu.role,
+        option: menu.option,
       });
     }
-  }, [product]);
+  }, [menu]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -64,16 +59,13 @@ const ProductsEdit = ({
     setIsLoading(true);
 
     const data = {
-      code: formData.code ? parseInt(formData.code, 10) : null,
-      name: formData.name,
-      description: formData.description || null,
-      price: formData.price,
-      measure_units: parseInt(formData.measureUnit, 10),
+      role: formData.role,
+      option: formData.option,
     };
 
     try {
       const response = await apiRequest({
-        endpoint: `product/${product.id}/`,
+        endpoint: `menu/${menu.id}/`,
         method: "PUT",
         jsonBody: data,
         token: token,
@@ -143,62 +135,38 @@ const ProductsEdit = ({
         <ModalBody>
           <Grid templateColumns="repeat(2, 1fr)" gap={4}>
             <FormControl gridColumn="span 1">
-              <FormLabel>Código</FormLabel>
-              <Input
-                type="number"
-                name="code"
-                value={formData.code}
-                onChange={handleChange}
-              />
-            </FormControl>
-            <FormControl gridColumn="span 1">
-              <FormLabel>Nombre</FormLabel>
-              <Input
-                type="text"
-                name="name"
-                value={formData.name}
-                onChange={handleChange}
-                maxLength={150}
-                minLength={1}
-                isRequired
-              />
-            </FormControl>
-            <FormControl gridColumn="span 1">
-              <FormLabel>Precio</FormLabel>
-              <Input
-                type="number"
-                name="price"
-                value={formData.price}
-                onChange={handleChange}
-                isRequired
-              />
-            </FormControl>
-            <FormControl gridColumn="span 1">
-              <FormLabel>Unidad de Medida</FormLabel>
+              <FormLabel>Rol</FormLabel>
               <Select
-                name="measureUnit"
-                value={formData.measureUnit}
+                name="role"
+                value={formData.role}
                 onChange={handleChange}
                 isRequired
               >
-                <option value="">Seleccione una unidad</option>
-                {Array.isArray(measureUnits) &&
-                  measureUnits.map((unit) => (
+                <option value="">Seleccione Un Rol</option>
+                {Array.isArray(role) &&
+                  role.map((unit) => (
+                    <option key={unit.id} value={unit.id}>
+                      {unit.role}
+                    </option>
+                  ))}
+              </Select>
+            </FormControl>
+            <FormControl gridColumn="span 1">
+              <FormLabel>Opcion</FormLabel>
+              <Select
+                name="option"
+                value={formData.option}
+                onChange={handleChange}
+                isRequired
+              >
+                <option value="">Seleccione Una Opcion</option>
+                {Array.isArray(option) &&
+                  option.map((unit) => (
                     <option key={unit.id} value={unit.id}>
                       {unit.name}
                     </option>
                   ))}
               </Select>
-            </FormControl>
-            <FormControl gridColumn="span 2">
-              <FormLabel>Descripción</FormLabel>
-              <Textarea
-                name="description"
-                value={formData.description}
-                onChange={handleChange}
-                maxLength={250}
-                minLength={1}
-              />
             </FormControl>
           </Grid>
         </ModalBody>
@@ -217,4 +185,4 @@ const ProductsEdit = ({
   );
 };
 
-export default ProductsEdit;
+export default MenuEdit;

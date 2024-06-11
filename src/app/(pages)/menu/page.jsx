@@ -1,8 +1,8 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
-import OptionCreate from "@/components/OptionComponents/OptionCreate";
-import OptionEdit from "@/components/OptionComponents/OptionEdit";
+import MenuCreate from "@/components/MenuComponents/MenuCreate";
+import MenuEdit from "@/components/MenuComponents/MenuEdit";
 import {
   Card,
   CardBody,
@@ -25,19 +25,21 @@ import { EditIcon, DeleteIcon } from "@chakra-ui/icons";
 import { fetchData } from "@/utils/fetchData";
 import { handleDelete } from "@/utils/handleDelete";
 
-const Option = () => {
+const Menu = () => {
   const { data: session } = useSession();
   const [isLoading, setIsLoading] = useState(false);
   const [dataResponse, setDataResponse] = useState();
+  const [role, setRole] = useState();
+  const [option, setOption] = useState();
   const [isModalOpenCreate, setIsModalOpenCreate] = useState(false);
   const [isModalOpenEdit, setIsModalOpenEdit] = useState(false);
-  const [optionSeletct, setOptionSeletct] = useState();
+  const [menu, setMenu] = useState();
   const token = session.user.token;
 
-  const dataOption = async () => {
+  const dataMenu = async () => {
     setIsLoading(true);
     const data = await fetchData({
-      endpoint: "options/",
+      endpoint: "menu/",
       token: token,
       showAlert: true,
     });
@@ -47,23 +49,47 @@ const Option = () => {
     setIsLoading(false);
   };
 
-  const handleEditClick = (option) => {
-    setOptionSeletct(option);
+  const dataRole = async () => {
+    const data = await fetchData({
+      endpoint: "roles/",
+      token: token,
+      showAlert: false,
+    });
+    console.log("este es el role", data);
+    if (data) {
+      setRole(data);
+    }
+  };
+  const dataOption = async () => {
+    const data = await fetchData({
+      endpoint: "options/",
+      token: token,
+      showAlert: false,
+    });
+    if (data) {
+      setOption(data);
+    }
+  };
+
+  const handleEditClick = (menu) => {
+    setMenu(menu);
     setIsModalOpenEdit(true);
   };
 
-  const handleDeleteClick = async (optionid) => {
+  const handleDeleteClick = async (menuId) => {
     setIsLoading(true);
     await handleDelete({
-      endpoint: "options/",
+      endpoint: "menu/",
       token: token,
-      elementId: optionid,
-      callback: dataOption,
+      elementId: menuId,
+      callback: dataMenu,
     });
     setIsLoading(false);
   };
 
   useEffect(() => {
+    dataMenu();
+    dataRole();
     dataOption();
   }, []);
 
@@ -96,7 +122,7 @@ const Option = () => {
           justifyContent="space-between"
           alignItems="center"
         >
-          <Heading fontSize={20}>Opciones De Menu</Heading>
+          <Heading fontSize={20}>Menus</Heading>
           <Button
             colorScheme="blue"
             bg="blue.900"
@@ -105,7 +131,7 @@ const Option = () => {
             w={170}
             onClick={() => setIsModalOpenCreate(true)}
           >
-            Crear Nuevas Opciones
+            Crear Nuevo Menu
           </Button>
         </CardHeader>
         <CardBody h="90%" overflow="auto" className="scrollable">
@@ -113,29 +139,25 @@ const Option = () => {
             <Table variant="simple">
               <Thead>
                 <Tr>
-                  <Th fontSize={12}>Nombre</Th>
-                  <Th fontSize={12}>Descripcion</Th>
-                  <Th fontSize={12}>Link</Th>
-                  <Th fontSize={12}>Icon</Th>
+                  <Th fontSize={12}>Rol</Th>
+                  <Th fontSize={12}>Opcion De Menu</Th>
                   <Th fontSize={12}>Opciones</Th>
                 </Tr>
               </Thead>
               <Tbody>
                 {dataResponse ? (
-                  dataResponse.map((option, index) => (
+                  dataResponse.map((menu, index) => (
                     <Tr key={index}>
-                      <Td fontSize={12}>{option.name}</Td>
-                      <Td fontSize={12}>{option.description}</Td>
-                      <Td fontSize={12}>{option.link}</Td>
-                      <Td fontSize={12}>{option.icon}</Td>
+                      <Td fontSize={12}>{menu.role_name}</Td>
+                      <Td fontSize={12}>{menu.option_name}</Td>
                       <Td fontSize={12}>
                         <EditIcon
                           marginLeft={5}
-                          onClick={() => handleEditClick(option)}
+                          onClick={() => handleEditClick(menu)}
                         />
                         <DeleteIcon
                           marginLeft={1}
-                          onClick={() => handleDeleteClick(option.id)}
+                          onClick={() => handleDeleteClick(menu.id)}
                         />
                       </Td>
                     </Tr>
@@ -155,19 +177,23 @@ const Option = () => {
           <Text fontSize={10}> By: SMS Correo: Mariasol0304@gmail.com</Text>
         </CardFooter>
       </Card>
-      <OptionCreate
+      <MenuCreate
         isOpen={isModalOpenCreate}
         onClose={() => setIsModalOpenCreate(false)}
-        reloadProducts={dataOption}
+        role={role}
+        option={option}
+        reloadProducts={dataMenu}
       />
-      <OptionEdit
+      <MenuEdit
         isOpen={isModalOpenEdit}
         onClose={() => setIsModalOpenEdit(false)}
-        reloadProducts={dataOption}
-        option={optionSeletct}
+        role={role}
+        option={option}
+        reloadProducts={dataMenu}
+        menu={menu}
       />
     </Flex>
   );
 };
 
-export default Option;
+export default Menu;

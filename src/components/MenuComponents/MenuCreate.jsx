@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import {
   Modal,
   ModalOverlay,
@@ -10,8 +10,6 @@ import {
   ModalCloseButton,
   FormControl,
   FormLabel,
-  Input,
-  Textarea,
   Select,
   Button,
   Grid,
@@ -22,35 +20,14 @@ import { useSession } from "next-auth/react";
 import { apiRequest } from "@/services/fetchService";
 import Swal from "sweetalert2";
 
-const ProductsEdit = ({
-  isOpen,
-  onClose,
-  product,
-  measureUnits,
-  reloadProducts,
-}) => {
+const MenuCreate = ({ isOpen, onClose, role, option, reloadProducts }) => {
   const [formData, setFormData] = useState({
-    code: "",
-    name: "",
-    description: "",
-    price: "",
-    measureUnit: "",
+    option: "",
+    role: "",
   });
   const { data: session } = useSession();
   const token = session.user.token;
   const [isLoading, setIsLoading] = useState(false);
-
-  useEffect(() => {
-    if (product) {
-      setFormData({
-        code: product.code,
-        name: product.name,
-        description: product.description,
-        price: product.price,
-        measureUnit: product.measure_units,
-      });
-    }
-  }, [product]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -64,22 +41,19 @@ const ProductsEdit = ({
     setIsLoading(true);
 
     const data = {
-      code: formData.code ? parseInt(formData.code, 10) : null,
-      name: formData.name,
-      description: formData.description || null,
-      price: formData.price,
-      measure_units: parseInt(formData.measureUnit, 10),
+      option: formData.option,
+      role: formData.role,
     };
 
     try {
+        console.log('esta es la data', data);
       const response = await apiRequest({
-        endpoint: `product/${product.id}/`,
-        method: "PUT",
+        endpoint: "menu/",
+        method: "POST",
         jsonBody: data,
         token: token,
       });
-
-      if (response.status !== 200) {
+      if (response.status != 201) {
         Swal.fire({
           position: "center",
           icon: "error",
@@ -101,15 +75,7 @@ const ProductsEdit = ({
         onClose();
       }
     } catch (error) {
-      console.error("Error updating product:", error);
-      Swal.fire({
-        position: "center",
-        icon: "error",
-        title: error,
-        showConfirmButton: false,
-        timer: 3000,
-      });
-      setIsLoading(false);
+      console.error("Error submitting product:", error);
     }
   };
 
@@ -138,74 +104,50 @@ const ProductsEdit = ({
       )}
       <ModalOverlay />
       <ModalContent>
-        <ModalHeader>Editar Producto</ModalHeader>
+        <ModalHeader>Crear Nuevo Menu</ModalHeader>
         <ModalCloseButton />
         <ModalBody>
           <Grid templateColumns="repeat(2, 1fr)" gap={4}>
             <FormControl gridColumn="span 1">
-              <FormLabel>Código</FormLabel>
-              <Input
-                type="number"
-                name="code"
-                value={formData.code}
-                onChange={handleChange}
-              />
-            </FormControl>
-            <FormControl gridColumn="span 1">
-              <FormLabel>Nombre</FormLabel>
-              <Input
-                type="text"
-                name="name"
-                value={formData.name}
-                onChange={handleChange}
-                maxLength={150}
-                minLength={1}
-                isRequired
-              />
-            </FormControl>
-            <FormControl gridColumn="span 1">
-              <FormLabel>Precio</FormLabel>
-              <Input
-                type="number"
-                name="price"
-                value={formData.price}
-                onChange={handleChange}
-                isRequired
-              />
-            </FormControl>
-            <FormControl gridColumn="span 1">
-              <FormLabel>Unidad de Medida</FormLabel>
+              <FormLabel>Role</FormLabel>
               <Select
-                name="measureUnit"
-                value={formData.measureUnit}
+                name="role"
+                value={formData.role}
                 onChange={handleChange}
                 isRequired
               >
-                <option value="">Seleccione una unidad</option>
-                {Array.isArray(measureUnits) &&
-                  measureUnits.map((unit) => (
+                <option value="">Seleccione Un Rol</option>
+                {Array.isArray(role) &&
+                  role.map((unit, index) => (
+                    <option key={unit.id} value={unit.id}>
+                      {unit.role}
+                    </option>
+                  ))}
+              </Select>
+            </FormControl>
+            <FormControl gridColumn="span 1">
+              <FormLabel>Option</FormLabel>
+              <Select
+                name="option"
+                value={formData.option}
+                onChange={handleChange}
+                isRequired
+              >
+                <option value="">Seleccione Una Opcion</option>
+                {Array.isArray(option) &&
+                  option.map((unit, index) => (
                     <option key={unit.id} value={unit.id}>
                       {unit.name}
                     </option>
                   ))}
               </Select>
             </FormControl>
-            <FormControl gridColumn="span 2">
-              <FormLabel>Descripción</FormLabel>
-              <Textarea
-                name="description"
-                value={formData.description}
-                onChange={handleChange}
-                maxLength={250}
-                minLength={1}
-              />
-            </FormControl>
           </Grid>
         </ModalBody>
         <ModalFooter>
           <Flex justify="space-between" w="100%">
             <Button colorScheme="blue" onClick={handleSubmit}>
-              Guardar
+              Crear
             </Button>
             <Button colorScheme="red" onClick={onClose}>
               Cancelar
@@ -217,4 +159,4 @@ const ProductsEdit = ({
   );
 };
 
-export default ProductsEdit;
+export default MenuCreate;
