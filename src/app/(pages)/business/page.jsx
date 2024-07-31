@@ -1,9 +1,8 @@
 "use client"
 import React, { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
-import UserCreate from "@/components/UsersComponents/UserCreate";
-import UserEdit from "@/components/UsersComponents/UserEdit";
-
+import BusinessCreate from "@/components/BusinessComponents/BusinessCreate";
+import BusinessEdit from "@/components/BusinessComponents/BusinessEdit";
 import {
   Card,
   CardBody,
@@ -25,21 +24,20 @@ import {
 import { EditIcon, DeleteIcon } from "@chakra-ui/icons";
 import { fetchData } from "@/utils/fetchData";
 import { handleDelete } from "@/utils/handleDelete";
-
-const User = () => {
+const Business = () => {
   const { data: session } = useSession();
   const [isLoading, setIsLoading] = useState(true);
   const [dataResponse, setDataResponse] = useState();
-  const [responseRole, setResponseRole] = useState();
+  const [responseUserCustomer, setResponseUserCustomer] = useState();
   const [isModalOpenCreate, setIsModalOpenCreate] = useState(false);
   const [isModalOpenEdit, setIsModalOpenEdit] = useState(false);
-  const [user, setUser] = useState();
+  const [business, setBusiness] = useState();
   const token = session.user.token;
 
 
-  const dataUser = async () => {
+  const dataBusiness = async () => {
     const data = await fetchData({
-      endpoint: "users/",
+      endpoint: "business/",
       token: token,
       showAlert: true,
     });
@@ -48,37 +46,37 @@ const User = () => {
     }
     setIsLoading(false);
   };
-  const dataRole = async () => {
+  const dataUserCustomer = async () => {
     const data = await fetchData({
-      endpoint: "roles/",
+      endpoint: "users/get_user_business/",
       token: token,
       showAlert: false,
     });
     if (data) {
-      setResponseRole(data);
+      setResponseUserCustomer(data);
     }
   };
 
 
-  const handleEditClick = (user) => {
-    setUser(user);
+  const handleEditClick = (business) => {
+    setBusiness(business);
     setIsModalOpenEdit(true);
   };
 
-  const handleDeleteClick = async (userID) => {
+  const handleDeleteClick = async (businessId) => {
     setIsLoading(true);
     await handleDelete({
-      endpoint: "users/",
+      endpoint: "business/",
       token: token,
-      elementId: userID,
-      callback: dataUser,
+      elementId: businessId,
+      callback: dataBusiness,
     });
     setIsLoading(false);
   };
 
   useEffect(() => {
-    dataUser();
-    dataRole();
+      dataBusiness();
+      dataUserCustomer();
   }, []);
 
   return (
@@ -110,7 +108,7 @@ const User = () => {
           justifyContent="space-between"
           alignItems="center"
         >
-          <Heading fontSize={20}>Atributos</Heading>
+          <Heading fontSize={20}>Negocios</Heading>
           <Button
             colorScheme="blue"
             bg="blue.900"
@@ -119,7 +117,7 @@ const User = () => {
             w={170}
             onClick={() => setIsModalOpenCreate(true)}
           >
-            Crear Usuario
+            Crear Negocio
           </Button>
         </CardHeader>
         <CardBody h="90%" overflow="auto" className="scrollable">
@@ -128,28 +126,26 @@ const User = () => {
               <Thead>
                 <Tr>
                   <Th fontSize={12}>Id</Th>
-                  <Th fontSize={12}>Nombre</Th>
-                  <Th fontSize={12}>Correo</Th>
-                  <Th fontSize={12}>Rol</Th>
+                  <Th fontSize={12}>Cliente</Th>
+                  <Th fontSize={12}>Nombre  Del Negocio</Th>
                   <Th fontSize={12}>Opciones</Th>
                 </Tr>
               </Thead>
               <Tbody>
                 {dataResponse ? (
-                  dataResponse.map((user, index) => (
+                  dataResponse.map((business, index) => (
                     <Tr key={index}>
-                      <Td fontSize={12}>{user.id}</Td>
-                      <Td fontSize={12}>{`${user.name} ${user.last_name}`}</Td>
-                      <Td fontSize={12}>{user.email}</Td>
-                      <Td fontSize={12}>{user.role_name}</Td>
+                      <Td fontSize={12}>{business.id}</Td>
+                      <Td fontSize={12}>{business.user_name}</Td>
+                      <Td fontSize={12}>{business.name_business}</Td>
                       <Td fontSize={12}>
                         <EditIcon
                           marginLeft={5}
-                          onClick={() => handleEditClick(user)}
+                          onClick={() => handleEditClick(business)}
                         />
                         <DeleteIcon
                           marginLeft={1}
-                          onClick={() => handleDeleteClick(user.id)}
+                          onClick={() => handleDeleteClick(business.id)}
                         />
                       </Td>
                     </Tr>
@@ -169,22 +165,22 @@ const User = () => {
           <Text fontSize={10}> By: SMS Correo: Mariasol0304@gmail.com</Text>
         </CardFooter>
       </Card>
-      <UserCreate
+      <BusinessCreate
         isOpen={isModalOpenCreate}
         onClose={() => setIsModalOpenCreate(false)}
-        userReload={dataUser}
-        responseRole={responseRole}
+        businesReload={dataBusiness}
+        responseUserCustomer={responseUserCustomer}
 
       />
-      <UserEdit
+      <BusinessEdit
         isOpen={isModalOpenEdit}
         onClose={() => setIsModalOpenEdit(false)}
-        userReload={dataUser}
-        user={user}
-        responseRole={responseRole}
+        businesReload={dataBusiness}
+        business={business}
+        responseUserCustomer={responseUserCustomer}
       />
     </Flex>
   );
 }
 
-export default User
+export default Business

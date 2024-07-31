@@ -1,9 +1,8 @@
 "use client"
 import React, { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
-import UserCreate from "@/components/UsersComponents/UserCreate";
-import UserEdit from "@/components/UsersComponents/UserEdit";
-
+import RoleCreate from "@/components/RoleComponents/RoleCreate";
+import RoleEdit from "@/components/RoleComponents/RoleEdit";
 import {
   Card,
   CardBody,
@@ -25,60 +24,48 @@ import {
 import { EditIcon, DeleteIcon } from "@chakra-ui/icons";
 import { fetchData } from "@/utils/fetchData";
 import { handleDelete } from "@/utils/handleDelete";
-
-const User = () => {
+const Role = () => {
   const { data: session } = useSession();
   const [isLoading, setIsLoading] = useState(true);
   const [dataResponse, setDataResponse] = useState();
-  const [responseRole, setResponseRole] = useState();
   const [isModalOpenCreate, setIsModalOpenCreate] = useState(false);
   const [isModalOpenEdit, setIsModalOpenEdit] = useState(false);
-  const [user, setUser] = useState();
+  const [role, setRole] = useState();
   const token = session.user.token;
 
 
-  const dataUser = async () => {
-    const data = await fetchData({
-      endpoint: "users/",
-      token: token,
-      showAlert: true,
-    });
-    if (data) {
-      setDataResponse(data);
-    }
-    setIsLoading(false);
-  };
   const dataRole = async () => {
     const data = await fetchData({
       endpoint: "roles/",
       token: token,
-      showAlert: false,
+      showAlert: true,
     });
     if (data) {
-      setResponseRole(data);
+      console.log(data);
+      setDataResponse(data);
     }
+    setIsLoading(false);
   };
 
 
-  const handleEditClick = (user) => {
-    setUser(user);
+  const handleEditClick = (role) => {
+    setRole(role);
     setIsModalOpenEdit(true);
   };
 
-  const handleDeleteClick = async (userID) => {
+  const handleDeleteClick = async (roleId) => {
     setIsLoading(true);
     await handleDelete({
-      endpoint: "users/",
+      endpoint: "roles/",
       token: token,
-      elementId: userID,
-      callback: dataUser,
+      elementId: roleId,
+      callback: dataRole,
     });
     setIsLoading(false);
   };
 
   useEffect(() => {
-    dataUser();
-    dataRole();
+      dataRole();
   }, []);
 
   return (
@@ -119,7 +106,7 @@ const User = () => {
             w={170}
             onClick={() => setIsModalOpenCreate(true)}
           >
-            Crear Usuario
+            Crear Rol
           </Button>
         </CardHeader>
         <CardBody h="90%" overflow="auto" className="scrollable">
@@ -129,27 +116,23 @@ const User = () => {
                 <Tr>
                   <Th fontSize={12}>Id</Th>
                   <Th fontSize={12}>Nombre</Th>
-                  <Th fontSize={12}>Correo</Th>
-                  <Th fontSize={12}>Rol</Th>
                   <Th fontSize={12}>Opciones</Th>
                 </Tr>
               </Thead>
               <Tbody>
                 {dataResponse ? (
-                  dataResponse.map((user, index) => (
+                  dataResponse.map((rol, index) => (
                     <Tr key={index}>
-                      <Td fontSize={12}>{user.id}</Td>
-                      <Td fontSize={12}>{`${user.name} ${user.last_name}`}</Td>
-                      <Td fontSize={12}>{user.email}</Td>
-                      <Td fontSize={12}>{user.role_name}</Td>
+                      <Td fontSize={12}>{rol.id}</Td>
+                      <Td fontSize={12}>{rol.role}</Td>
                       <Td fontSize={12}>
                         <EditIcon
                           marginLeft={5}
-                          onClick={() => handleEditClick(user)}
+                          onClick={() => handleEditClick(rol)}
                         />
                         <DeleteIcon
                           marginLeft={1}
-                          onClick={() => handleDeleteClick(user.id)}
+                          onClick={() => handleDeleteClick(rol.id)}
                         />
                       </Td>
                     </Tr>
@@ -169,22 +152,19 @@ const User = () => {
           <Text fontSize={10}> By: SMS Correo: Mariasol0304@gmail.com</Text>
         </CardFooter>
       </Card>
-      <UserCreate
+      <RoleCreate
         isOpen={isModalOpenCreate}
         onClose={() => setIsModalOpenCreate(false)}
-        userReload={dataUser}
-        responseRole={responseRole}
-
+        roleReload={dataRole}
       />
-      <UserEdit
+      <RoleEdit
         isOpen={isModalOpenEdit}
         onClose={() => setIsModalOpenEdit(false)}
-        userReload={dataUser}
-        user={user}
-        responseRole={responseRole}
+        roleReload={dataRole}
+        role={role}
       />
     </Flex>
   );
 }
 
-export default User
+export default Role

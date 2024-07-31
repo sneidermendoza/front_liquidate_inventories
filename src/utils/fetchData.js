@@ -8,7 +8,6 @@ export const fetchData = async ({ endpoint, token, showAlert = true }) => {
       method: "GET",
       token: token,
     });
-
     if (response.status !== 200) {
       if (showAlert) {
         Swal.fire({
@@ -42,6 +41,6 @@ export const fetchData = async ({ endpoint, token, showAlert = true }) => {
         timer: 3000,
       });
     }
-    return null;
+    return ;
   }
 };

@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
 import ProductsCreate from "@/components/ProductsComponents/ProductsCreate";
 import ProductsEdit from "@/components/ProductsComponents/ProductsEdit";
-import {Card,CardBody,CardFooter,CardHeader,Flex,Heading,Spinner,Table,TableContainer,Tbody,Text,Th,Thead,Tr,Td,Button} from "@chakra-ui/react";
+import { Card, CardBody, CardFooter, CardHeader, Flex, Heading, Spinner, Table, TableContainer, Tbody, Text, Th, Thead, Tr, Td, Button } from "@chakra-ui/react";
 import { EditIcon, DeleteIcon } from "@chakra-ui/icons";
 import { fetchData } from "@/utils/fetchData";
 import { handleDelete } from "@/utils/handleDelete";
