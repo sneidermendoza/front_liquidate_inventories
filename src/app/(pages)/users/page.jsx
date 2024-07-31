@@ -1,9 +1,8 @@
-"use client"
+"use client";
 import React, { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
 import UserCreate from "@/components/UsersComponents/UserCreate";
 import UserEdit from "@/components/UsersComponents/UserEdit";
-
 import {
   Card,
   CardBody,
@@ -25,29 +24,35 @@ import {
 import { EditIcon, DeleteIcon } from "@chakra-ui/icons";
 import { fetchData } from "@/utils/fetchData";
 import { handleDelete } from "@/utils/handleDelete";
+import Pagination from "@/components/PaginateComponents/Paginate";
 
 const User = () => {
   const { data: session } = useSession();
   const [isLoading, setIsLoading] = useState(true);
-  const [dataResponse, setDataResponse] = useState();
-  const [responseRole, setResponseRole] = useState();
+  const [dataResponse, setDataResponse] = useState([]);
+  const [responseRole, setResponseRole] = useState([]);
   const [isModalOpenCreate, setIsModalOpenCreate] = useState(false);
   const [isModalOpenEdit, setIsModalOpenEdit] = useState(false);
-  const [user, setUser] = useState();
-  const token = session.user.token;
+  const [user, setUser] = useState(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const token = session?.user?.token;
 
-
-  const dataUser = async () => {
+  const dataUser = async (page = 1, showAlert = true) => {
+    setIsLoading(true); // Asegúrate de mostrar el spinner mientras se cargan los datos
     const data = await fetchData({
-      endpoint: "users/",
+      endpoint: `users/?page=${page}`,
       token: token,
-      showAlert: true,
+      showAlert: showAlert,
     });
+
     if (data) {
-      setDataResponse(data);
+      setDataResponse(data.data.results);
+      setTotalPages(Math.ceil(data.data.count / data.data.results.length));
     }
     setIsLoading(false);
   };
+
   const dataRole = async () => {
     const data = await fetchData({
       endpoint: "roles/",
@@ -59,6 +64,10 @@ const User = () => {
     }
   };
 
+  const handlePageChange = (page) => {
+    setCurrentPage(page);
+    dataUser(page, false); // Desactiva la alerta al cambiar de página
+  };
 
   const handleEditClick = (user) => {
     setUser(user);
@@ -71,15 +80,17 @@ const User = () => {
       endpoint: "users/",
       token: token,
       elementId: userID,
-      callback: dataUser,
+      callback: () => dataUser(currentPage, false),
     });
     setIsLoading(false);
   };
 
   useEffect(() => {
-    dataUser();
-    dataRole();
-  }, []);
+    if (token) {
+      dataUser(currentPage); // Llama a dataUser sólo si el token está disponible
+      dataRole();
+    }
+  }, []); // Asegúrate de que el efecto solo dependa del token y la página actual
 
   return (
     <Flex direction="column" h="100%">
@@ -135,7 +146,7 @@ const User = () => {
                 </Tr>
               </Thead>
               <Tbody>
-                {dataResponse ? (
+                {dataResponse && dataResponse.length > 0 ? (
                   dataResponse.map((user, index) => (
                     <Tr key={index}>
                       <Td fontSize={12}>{user.id}</Td>
@@ -165,26 +176,29 @@ const User = () => {
             </Table>
           </TableContainer>
         </CardBody>
-        <CardFooter h="10%" justifyContent={"center"} alignItems={"center"}>
-          <Text fontSize={10}> By: SMS Correo: Mariasol0304@gmail.com</Text>
+        <CardFooter h="20%" justifyContent={"right"} alignItems={"center"}>
+          <Pagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPageChange={handlePageChange}
+          />
         </CardFooter>
       </Card>
       <UserCreate
         isOpen={isModalOpenCreate}
         onClose={() => setIsModalOpenCreate(false)}
-        userReload={dataUser}
+        userReload={() => dataUser(currentPage, true)}
         responseRole={responseRole}
-
       />
       <UserEdit
         isOpen={isModalOpenEdit}
         onClose={() => setIsModalOpenEdit(false)}
-        userReload={dataUser}
+        userReload={() => dataUser(currentPage, true)}
         user={user}
         responseRole={responseRole}
       />
     </Flex>
   );
-}
+};
 
-export default User
+export default User;

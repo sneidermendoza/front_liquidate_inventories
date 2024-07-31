@@ -41,8 +41,7 @@ const Role = () => {
       showAlert: true,
     });
     if (data) {
-      console.log(data);
-      setDataResponse(data);
+      setDataResponse(data.data.results);
     }
     setIsLoading(false);
   };
@@ -97,7 +96,7 @@ const Role = () => {
           justifyContent="space-between"
           alignItems="center"
         >
-          <Heading fontSize={20}>Atributos</Heading>
+          <Heading fontSize={20}>Roles</Heading>
           <Button
             colorScheme="blue"
             bg="blue.900"

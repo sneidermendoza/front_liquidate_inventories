@@ -42,7 +42,7 @@ const MeasureUnits = () => {
       showAlert: true,
     });
     if (data) {
-      setDataResponse(data);
+      setDataResponse(data.data.results);
     }
   };
 

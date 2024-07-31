@@ -44,7 +44,7 @@ const Menu = () => {
       showAlert: true,
     });
     if (data) {
-      setDataResponse(data);
+      setDataResponse(data.data.results);
     }
     setIsLoading(false);
   };

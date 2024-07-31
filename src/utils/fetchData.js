@@ -1,7 +1,7 @@
 import Swal from "sweetalert2";
 import { apiRequest } from "@/services/fetchService";
 
-export const fetchData = async ({ endpoint, token, showAlert = true }) => {
+export const fetchData = async ({ endpoint, token, showAlert = false }) => {
   try {
     const response = await apiRequest({
       endpoint: endpoint,
@@ -29,7 +29,7 @@ export const fetchData = async ({ endpoint, token, showAlert = true }) => {
           timer: 1500,
         });
       }
-      return response.data;
+      return response;
     }
   } catch (error) {
     if (showAlert) {
