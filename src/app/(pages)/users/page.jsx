@@ -25,6 +25,8 @@ import { EditIcon, DeleteIcon } from "@chakra-ui/icons";
 import { fetchData } from "@/utils/fetchData";
 import { handleDelete } from "@/utils/handleDelete";
 import Pagination from "@/components/PaginateComponents/Paginate";
+import Search from "@/components/SearchComponents/search"
+
 
 const User = () => {
   const { data: session } = useSession();
@@ -37,18 +39,24 @@ const User = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const token = session?.user?.token;
+  const [pagesCalculated, setPagesCalculated] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
 
-  const dataUser = async (page = 1, showAlert = true) => {
+  const dataUser = async (page = 1, showAlert = true, searchTerm = "") => {
     setIsLoading(true); // Asegúrate de mostrar el spinner mientras se cargan los datos
     const data = await fetchData({
-      endpoint: `users/?page=${page}`,
+      endpoint: `users/?page=${page}&search=${searchTerm}`,
       token: token,
       showAlert: showAlert,
     });
 
     if (data) {
       setDataResponse(data.data.results);
-      setTotalPages(Math.ceil(data.data.count / data.data.results.length));
+      if (!pagesCalculated) {
+        const calculatedTotalPages = Math.ceil(data.data.count / data.data.results.length);
+        setTotalPages(calculatedTotalPages);
+        setPagesCalculated(true);
+      }
     }
     setIsLoading(false);
   };
@@ -60,13 +68,13 @@ const User = () => {
       showAlert: false,
     });
     if (data) {
-      setResponseRole(data);
+      setResponseRole(data.data.results);
     }
   };
 
   const handlePageChange = (page) => {
     setCurrentPage(page);
-    dataUser(page, false); // Desactiva la alerta al cambiar de página
+    dataUser(page, false,searchTerm); // Desactiva la alerta al cambiar de página
   };
 
   const handleEditClick = (user) => {
@@ -80,14 +88,18 @@ const User = () => {
       endpoint: "users/",
       token: token,
       elementId: userID,
-      callback: () => dataUser(currentPage, false),
+      callback: () => dataUser(currentPage, false,searchTerm),
     });
     setIsLoading(false);
+  };
+  const handleSearch = (searchTerm) => {
+    setSearchTerm(searchTerm);
+    dataUser(1, false, searchTerm); // Reiniciar a la primera página y realizar búsqueda
   };
 
   useEffect(() => {
     if (token) {
-      dataUser(currentPage); // Llama a dataUser sólo si el token está disponible
+      dataUser(currentPage,true,searchTerm); // Llama a dataUser sólo si el token está disponible
       dataRole();
     }
   }, []); // Asegúrate de que el efecto solo dependa del token y la página actual
@@ -121,7 +133,7 @@ const User = () => {
           justifyContent="space-between"
           alignItems="center"
         >
-          <Heading fontSize={20}>Atributos</Heading>
+          <Heading fontSize={30}>Usuarios</Heading>
           <Button
             colorScheme="blue"
             bg="blue.900"
@@ -133,12 +145,11 @@ const User = () => {
             Crear Usuario
           </Button>
         </CardHeader>
-        <CardBody h="90%" overflow="auto" className="scrollable">
+        <CardBody h="90%" overflowX={'auto'} overflowY={'hidden'} className="scrollable">
           <TableContainer>
-            <Table variant="simple">
+            <Table variant="simple" size='sm'>
               <Thead>
                 <Tr>
-                  <Th fontSize={12}>Id</Th>
                   <Th fontSize={12}>Nombre</Th>
                   <Th fontSize={12}>Correo</Th>
                   <Th fontSize={12}>Rol</Th>
@@ -149,7 +160,6 @@ const User = () => {
                 {dataResponse && dataResponse.length > 0 ? (
                   dataResponse.map((user, index) => (
                     <Tr key={index}>
-                      <Td fontSize={12}>{user.id}</Td>
                       <Td fontSize={12}>{`${user.name} ${user.last_name}`}</Td>
                       <Td fontSize={12}>{user.email}</Td>
                       <Td fontSize={12}>{user.role_name}</Td>
@@ -176,7 +186,10 @@ const User = () => {
             </Table>
           </TableContainer>
         </CardBody>
-        <CardFooter h="20%" justifyContent={"right"} alignItems={"center"}>
+        <CardFooter h="15%" justifyContent={"space-between"} alignItems={"center"}>
+          <Search
+          onSearch={handleSearch}
+          />
           <Pagination
             currentPage={currentPage}
             totalPages={totalPages}

@@ -110,7 +110,7 @@ const Option = () => {
         </CardHeader>
         <CardBody h="90%" overflow="auto" className="scrollable">
           <TableContainer>
-            <Table variant="simple">
+            <Table variant="simple" size='sm'>
               <Thead>
                 <Tr>
                   <Th fontSize={12}>Nombre</Th>

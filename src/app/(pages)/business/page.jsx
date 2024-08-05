@@ -24,6 +24,7 @@ import {
 import { EditIcon, DeleteIcon } from "@chakra-ui/icons";
 import { fetchData } from "@/utils/fetchData";
 import { handleDelete } from "@/utils/handleDelete";
+import Search from "@/components/SearchComponents/search"
 const Business = () => {
   const { data: session } = useSession();
   const [isLoading, setIsLoading] = useState(true);
@@ -53,7 +54,8 @@ const Business = () => {
       showAlert: false,
     });
     if (data) {
-      setResponseUserCustomer(data);
+      console.log(data);
+      setResponseUserCustomer(data.data);
     }
   };
 
@@ -122,7 +124,7 @@ const Business = () => {
         </CardHeader>
         <CardBody h="90%" overflow="auto" className="scrollable">
           <TableContainer>
-            <Table variant="simple">
+            <Table variant="simple" size='sm'>
               <Thead>
                 <Tr>
                   <Th fontSize={12}>Id</Th>
@@ -161,8 +163,10 @@ const Business = () => {
             </Table>
           </TableContainer>
         </CardBody>
-        <CardFooter h="10%" justifyContent={"center"} alignItems={"center"}>
-          <Text fontSize={10}> By: SMS Correo: Mariasol0304@gmail.com</Text>
+        <CardFooter h="20%" justifyContent={"rigth"} alignItems={"center"}>
+        <Search
+
+        />
         </CardFooter>
       </Card>
       <BusinessCreate

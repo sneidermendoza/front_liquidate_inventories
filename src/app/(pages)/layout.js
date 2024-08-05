@@ -29,14 +29,14 @@ const AuthLayout = ({ children }) => {
           {/* El Navbar ocupa toda la primera fila */}
           <Navbar />
         </GridItem>
-        <GridItem rowSpan={2} colSpan={1} height="100%" overflowY="auto">
+        <GridItem rowSpan={2} colSpan={1} height="100%" overflowY="hidden">
           {/* El Sidebar ocupa toda la primera columna */}
           <Sidebar />
         </GridItem>
         <GridItem
           rowSpan={1}
           colSpan={1}
-          overflowY="auto"
+          overflowY="clip"
           overflowX="auto"
           maxHeight="100vh"
           maxWidth="100vw"

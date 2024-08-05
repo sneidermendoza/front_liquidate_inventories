@@ -29,10 +29,11 @@ const Pagination = ({ currentPage, totalPages, onPageChange }) => {
   }
 
   return (
-    <Box display="flex" justifyContent="center" alignItems="center" mt="4">
+    <Box display="flex" justifyContent="center" alignItems="center" mt="4"             margin={'0px'}
+>
       <Button
         onClick={() => onPageChange(currentPage - 1)}
-        disabled={!canGoBack}
+        isDisabled={!canGoBack}
         colorScheme="teal"
         mx="1"
         size="sm"
@@ -48,7 +49,7 @@ const Pagination = ({ currentPage, totalPages, onPageChange }) => {
           <Button
             key={index}
             onClick={() => onPageChange(number)}
-            disabled={number === currentPage}
+            isDisabled={number === currentPage}
             colorScheme={number === currentPage ? "blue" : "gray"}
             mx="1"
             size="sm"
@@ -60,7 +61,7 @@ const Pagination = ({ currentPage, totalPages, onPageChange }) => {
       )}
       <Button
         onClick={() => onPageChange(currentPage + 1)}
-        disabled={!canGoForward}
+        isDisabled={!canGoForward}
         colorScheme="teal"
         mx="1"
         size="sm"

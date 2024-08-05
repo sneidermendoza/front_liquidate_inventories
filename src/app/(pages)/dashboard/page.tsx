@@ -17,7 +17,7 @@ const Dashboard = () => {
         </CardHeader>
         <CardBody h="90%" overflow="auto" className="scrollable">
           <TableContainer>
-            <Table variant="simple">
+            <Table variant="simple" size='sm'>
               <Thead>
                 <Tr
                   style={{
