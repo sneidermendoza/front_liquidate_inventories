@@ -3,6 +3,7 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import SessionAuthProvider from "@/context/SessionAuthProvider";
 import Chakra from "@/components/Chakra/Chakra";
+import Downtime from '@/components/Downtime/Downtime';
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -19,7 +20,10 @@ export default function RootLayout({
       <body className={inter.className}>
         <main className="container">
           <SessionAuthProvider>
-            <Chakra>{children}</Chakra>
+            <Chakra>
+              <Downtime /> 
+              {children}
+            </Chakra>
           </SessionAuthProvider>
         </main>
       </body>
