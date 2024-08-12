@@ -53,7 +53,7 @@ const Attributes = () => {
       showAlert: false,
     });
     if (data) {
-      setResponseParameters(data);
+      setResponseParameters(data.data.results);
     }
   };
 
