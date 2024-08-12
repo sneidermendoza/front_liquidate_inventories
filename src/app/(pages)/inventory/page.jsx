@@ -1,29 +1,43 @@
-"use client";
+"use client"
 import React, { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
-import LoadExcel from "@/components/ProductsComponents/LoadExcel";
-import ProductsCreate from "@/components/ProductsComponents/ProductsCreate";
-import ProductsEdit from "@/components/ProductsComponents/ProductsEdit";
-import { Card, CardBody, CardFooter, CardHeader, Flex, Heading, Spinner, Table, TableContainer, Tbody, Text, Th, Thead, Tr, Td, Button } from "@chakra-ui/react";
+import InventoryCreate from "@/components/InventoryComponents/InventoryCreate";
+
+import {
+  Card,
+  CardBody,
+  CardFooter,
+  CardHeader,
+  Flex,
+  Heading,
+  Spinner,
+  Table,
+  TableContainer,
+  Tbody,
+  Text,
+  Th,
+  Thead,
+  Tr,
+  Td,
+  Button,
+} from "@chakra-ui/react";
 import { EditIcon, DeleteIcon } from "@chakra-ui/icons";
 import { fetchData } from "@/utils/fetchData";
-import { handleDelete } from "@/utils/handleDelete";
-
-const Products = () => {
+const Inventory = () => {
   const { data: session } = useSession();
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const [dataResponse, setDataResponse] = useState();
-  const [MeasureUnits, setMeasureUnits] = useState();
-  const [isModalOpenExcel, setIsModalOpenExcel] = useState(false);
+  const [responseAttributes, setResponseAttributes] = useState();
+  const [responseBusiness, setResponseBusiness] = useState();
   const [isModalOpenCreate, setIsModalOpenCreate] = useState(false);
   const [isModalOpenEdit, setIsModalOpenEdit] = useState(false);
-  const [product, setProduct] = useState();
+  const [inventory, setInventory] = useState();
   const token = session.user.token;
 
-  const dataProduct = async () => {
-    setIsLoading(true);
+
+  const dataInventorys = async () => {
     const data = await fetchData({
-      endpoint: "product/",
+      endpoint: "inventory/",
       token: token,
       showAlert: true,
     });
@@ -32,37 +46,37 @@ const Products = () => {
     }
     setIsLoading(false);
   };
-
-  const dataMeasureUnits = async () => {
+  const dataAttributes = async () => {
     const data = await fetchData({
-      endpoint: "measure_units/",
+      endpoint: "attributes/",
       token: token,
       showAlert: false,
     });
     if (data) {
-      setMeasureUnits(data.data.results);
+      setResponseAttributes(data.data.results);
+    }
+  };
+  const dataBusiness = async () => {
+    const data = await fetchData({
+      endpoint: "business/",
+      token: token,
+      showAlert: false,
+    });
+    if (data) {
+      setResponseBusiness(data.data.results);
     }
   };
 
-  const handleEditClick = (product) => {
-    setProduct(product);
+  const handleEditClick = (inventory) => {
+    setInventory(inventory);
     setIsModalOpenEdit(true);
   };
 
-  const handleDeleteClick = async (productId) => {
-    setIsLoading(true);
-    await handleDelete({
-      endpoint: "product/",
-      token: token,
-      elementId: productId,
-      callback: dataProduct,
-    });
-    setIsLoading(false);
-  };
 
   useEffect(() => {
-    dataProduct();
-    dataMeasureUnits();
+      dataInventorys();
+      dataAttributes();
+      dataBusiness();
   }, []);
 
   return (
@@ -94,19 +108,7 @@ const Products = () => {
           justifyContent="space-between"
           alignItems="center"
         >
-          <Heading fontSize={20}>Productos</Heading>
-          <div className="butons_group">
-          <Button
-            colorScheme="blue"
-            bg="blue.900"
-            fontSize={13}
-            h={10}
-            w={185}
-            m={'0px 10px 0px 0px'}
-            onClick={() => setIsModalOpenExcel(true)}
-          >
-            Cargar Excel De Productos
-          </Button>
+          <Heading fontSize={20}>Inventarios</Heading>
           <Button
             colorScheme="blue"
             bg="blue.900"
@@ -115,41 +117,33 @@ const Products = () => {
             w={170}
             onClick={() => setIsModalOpenCreate(true)}
           >
-            Crear Nuevos productos
+            Crear Inventario
           </Button>
-          </div>
-          
         </CardHeader>
         <CardBody h="90%" overflow="auto" className="scrollable">
           <TableContainer>
             <Table variant="simple" size='sm'>
               <Thead>
                 <Tr>
-                  <Th fontSize={12}>Codigo</Th>
-                  <Th fontSize={12}>Nombre</Th>
-                  <Th fontSize={12}>Descripcion</Th>
-                  <Th fontSize={12}>Unidad De Medida</Th>
-                  <Th fontSize={12}>Precio</Th>
+                  <Th fontSize={12}>Id</Th>
+                  <Th fontSize={12}>Nombre Del Negocio</Th>
+                  <Th fontSize={12}>Estado</Th>
+                  <Th fontSize={12}>Costos</Th>
                   <Th fontSize={12}>Opciones</Th>
                 </Tr>
               </Thead>
               <Tbody>
                 {dataResponse ? (
-                  dataResponse.map((product, index) => (
+                  dataResponse.map((inventory, index) => (
                     <Tr key={index}>
-                      <Td fontSize={12}>{product.code}</Td>
-                      <Td fontSize={12}>{product.name}</Td>
-                      <Td fontSize={12}>{product.description}</Td>
-                      <Td fontSize={12}>{product.measure_units_name}</Td>
-                      <Td fontSize={12}>{product.price}</Td>
+                      <Td fontSize={12}>{inventory.id}</Td>
+                      <Td fontSize={12}>{inventory.business_name}</Td>
+                      <Td fontSize={12}>{inventory.inventory_status_name}</Td>
+                      <Td fontSize={12}>{inventory.total_cost}</Td>
                       <Td fontSize={12}>
                         <EditIcon
                           marginLeft={5}
-                          onClick={() => handleEditClick(product)}
-                        />
-                        <DeleteIcon
-                          marginLeft={1}
-                          onClick={() => handleDeleteClick(product.id)}
+                          onClick={() => handleEditClick(inventory)}
                         />
                       </Td>
                     </Tr>
@@ -169,26 +163,20 @@ const Products = () => {
           <Text fontSize={10}> By: SMS Correo: Mariasol0304@gmail.com</Text>
         </CardFooter>
       </Card>
-      <LoadExcel
-        isOpen={isModalOpenExcel}
-        onClose={() => setIsModalOpenExcel(false)}
-        reloadProducts={dataProduct}
-      />
-      <ProductsCreate
+      <InventoryCreate
         isOpen={isModalOpenCreate}
         onClose={() => setIsModalOpenCreate(false)}
-        measureUnits={MeasureUnits}
-        reloadProducts={dataProduct}
+        inventaryReload={dataInventorys}
+        responseBusiness={responseBusiness}
       />
-      <ProductsEdit
+      {/* <AttributesEdit
         isOpen={isModalOpenEdit}
         onClose={() => setIsModalOpenEdit(false)}
-        measureUnits={MeasureUnits}
-        reloadProducts={dataProduct}
-        product={product}
-      />
+        attributeReload={dataAttributes}
+        attribute={attribute}
+        responseParameter={responseParameter}
+      /> */}
     </Flex>
   );
-};
-
-export default Products;
+}
+export default Inventory

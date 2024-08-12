@@ -21,6 +21,6 @@
       "@/*": ["./src/*"]
     }
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "src/app/page.tsx", "src/app/(pages)/products/page.jsx", "src/app/(pages)/option/page.jsx", "src/app/(pages)/menu/page.jsx", "src/app/(pages)/measure_units/page.jsx", "src/app/(pages)/attributes/page.jsx", "src/app/(pages)/parameters/page.jsx", "src/app/(pages)/users/page.jsx", "src/app/(pages)/role/page.jsx", "src/app/(pages)/business/page.jsx"],
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "src/app/page.tsx", "src/app/(pages)/products/page.jsx", "src/app/(pages)/option/page.jsx", "src/app/(pages)/menu/page.jsx", "src/app/(pages)/measure_units/page.jsx", "src/app/(pages)/attributes/page.jsx", "src/app/(pages)/parameters/page.jsx", "src/app/(pages)/users/page.jsx", "src/app/(pages)/role/page.jsx", "src/app/(pages)/business/page.jsx", "src/app/(pages)/inventory/page.jsx"],
   "exclude": ["node_modules"]
 }
