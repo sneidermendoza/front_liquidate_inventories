@@ -8,6 +8,8 @@ import { Card, CardBody, CardFooter, CardHeader, Flex, Heading, Spinner, Table, 
 import { EditIcon, DeleteIcon } from "@chakra-ui/icons";
 import { fetchData } from "@/utils/fetchData";
 import { handleDelete } from "@/utils/handleDelete";
+import Pagination from "@/components/PaginateComponents/Paginate";
+import Search from "@/components/SearchComponents/search"
 
 const Products = () => {
   const { data: session } = useSession();
@@ -19,16 +21,25 @@ const Products = () => {
   const [isModalOpenEdit, setIsModalOpenEdit] = useState(false);
   const [product, setProduct] = useState();
   const token = session.user.token;
+  const [totalPages, setTotalPages] = useState(1);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pagesCalculated, setPagesCalculated] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
 
-  const dataProduct = async () => {
+  const dataProduct = async (page = 1, showAlert = true, searchTerm = "") => {
     setIsLoading(true);
     const data = await fetchData({
-      endpoint: "product/",
+      endpoint: `product/?page=${page}&search=${searchTerm}`,
       token: token,
-      showAlert: true,
+      showAlert: showAlert,
     });
     if (data) {
       setDataResponse(data.data.results);
+      if (!pagesCalculated) {
+        const calculatedTotalPages = Math.ceil(data.data.count / data.data.results.length);
+        setTotalPages(calculatedTotalPages);
+        setPagesCalculated(true);
+      }
     }
     setIsLoading(false);
   };
@@ -55,14 +66,26 @@ const Products = () => {
       endpoint: "product/",
       token: token,
       elementId: productId,
-      callback: dataProduct,
+      callback: dataProduct(currentPage, false,searchTerm),
     });
     setIsLoading(false);
   };
 
+  const handlePageChange = (page) => {
+    setCurrentPage(page);
+    dataProduct(page, false,searchTerm); // Desactiva la alerta al cambiar de página
+  };
+
+  const handleSearch = (searchTerm) => {
+    setSearchTerm(searchTerm);
+    dataProduct(1, false, searchTerm); // Reiniciar a la primera página y realizar búsqueda
+  };
+
   useEffect(() => {
-    dataProduct();
-    dataMeasureUnits();
+    if (token) {
+      dataProduct(currentPage,true,searchTerm);
+      dataMeasureUnits();
+    }
   }, []);
 
   return (
@@ -166,7 +189,14 @@ const Products = () => {
           </TableContainer>
         </CardBody>
         <CardFooter h="10%" justifyContent={"center"} alignItems={"center"}>
-          <Text fontSize={10}> By: SMS Correo: Mariasol0304@gmail.com</Text>
+        <Search
+          onSearch={handleSearch}
+          />
+          <Pagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPageChange={handlePageChange}
+          />
         </CardFooter>
       </Card>
       <LoadExcel
@@ -178,13 +208,13 @@ const Products = () => {
         isOpen={isModalOpenCreate}
         onClose={() => setIsModalOpenCreate(false)}
         measureUnits={MeasureUnits}
-        reloadProducts={dataProduct}
+        reloadProducts={() => dataProduct(currentPage, true)}
       />
       <ProductsEdit
         isOpen={isModalOpenEdit}
         onClose={() => setIsModalOpenEdit(false)}
         measureUnits={MeasureUnits}
-        reloadProducts={dataProduct}
+        reloadProducts={() => dataProduct(currentPage, true)}
         product={product}
       />
     </Flex>

@@ -43,7 +43,7 @@ const User = () => {
   const [searchTerm, setSearchTerm] = useState("");
 
   const dataUser = async (page = 1, showAlert = true, searchTerm = "") => {
-    setIsLoading(true); // Asegúrate de mostrar el spinner mientras se cargan los datos
+    setIsLoading(true); 
     const data = await fetchData({
       endpoint: `users/?page=${page}&search=${searchTerm}`,
       token: token,

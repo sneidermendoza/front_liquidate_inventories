@@ -66,11 +66,13 @@ const LoadExcel = ({ isOpen, onClose, reloadProducts }) => {
       const response = await apiRequest({
         endpoint: "product/bulk_create_products_excel/",
         method: "POST",
-        formDataBody: formData,
+        formData: formData,
         token: token,
       });
+      console.log('este es el form data',[...formData.entries()]);
+      
 
-      if (response.status !== 201) {
+      if (response.status !== 200) {
         Swal.fire({
           position: "center",
           icon: "error",
@@ -78,6 +80,7 @@ const LoadExcel = ({ isOpen, onClose, reloadProducts }) => {
           showConfirmButton: false,
           timer: 3000,
         });
+        onClose();
       } else {
         Swal.fire({
           position: "center",
@@ -91,6 +94,7 @@ const LoadExcel = ({ isOpen, onClose, reloadProducts }) => {
       }
     } catch (error) {
       console.error("Error submitting product:", error);
+      onClose();
       Swal.fire({
         position: "center",
         icon: "error",

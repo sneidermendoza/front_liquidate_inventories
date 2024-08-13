@@ -1,5 +1,4 @@
 const apiBaseUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
-
 export const apiRequest = async ({
   endpoint,
   method = "GET",
@@ -19,7 +18,8 @@ export const apiRequest = async ({
   if (token) {
     headers.append("Authorization", `Bearer ${token}`);
   }
-  if (jsonBody && method !== "DELETE") {
+  // No añadir Content-Type si formData está presente
+  if (jsonBody && method !== "DELETE" && !formData) {
     headers.append("Content-Type", "application/json");
   }
 
@@ -28,7 +28,7 @@ export const apiRequest = async ({
     headers,
   };
 
-  if (jsonBody && method !== "DELETE") {
+  if (jsonBody && method !== "DELETE" && !formData) {
     options.body = JSON.stringify(jsonBody);
   } else if (formData) {
     options.body = formData;
