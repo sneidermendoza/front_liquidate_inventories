@@ -1,6 +1,8 @@
 "use client"
 import React, { useState } from 'react';
 import { Input, InputGroup, InputLeftAddon } from '@chakra-ui/react';
+import {SearchIcon } from "@chakra-ui/icons";
+
 
 const Search = ({ onSearch }) => {
   const [searchValue, setSearchValue] = useState('');
@@ -29,7 +31,7 @@ const Search = ({ onSearch }) => {
 
   return (
     <InputGroup size='sm'>
-      <InputLeftAddon size='sm'>search</InputLeftAddon>
+      <InputLeftAddon size='sm'><SearchIcon/></InputLeftAddon>
       <Input
         value={searchValue}
         onChange={handleSearchChange}
