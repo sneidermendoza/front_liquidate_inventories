@@ -2,6 +2,8 @@
 import React, { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
 import InventoryCreate from "@/components/InventoryComponents/InventoryCreate";
+import Link from "next/link";
+
 
 import {
   Card,
@@ -20,9 +22,12 @@ import {
   Tr,
   Td,
   Button,
+  Icon,
 } from "@chakra-ui/react";
-import { EditIcon, DeleteIcon } from "@chakra-ui/icons";
+import { EditIcon } from "@chakra-ui/icons";
+import { MdReceipt } from 'react-icons/md'
 import { fetchData } from "@/utils/fetchData";
+import { INVENTORY_STATUS_FINALIZED } from "@/enum/GeneralEnum"
 const Inventory = () => {
   const { data: session } = useSession();
   const [isLoading, setIsLoading] = useState(true);
@@ -44,8 +49,10 @@ const Inventory = () => {
     if (data) {
       setDataResponse(data.data.results);
     }
+
     setIsLoading(false);
   };
+
   const dataAttributes = async () => {
     const data = await fetchData({
       endpoint: "attributes/",
@@ -56,6 +63,7 @@ const Inventory = () => {
       setResponseAttributes(data.data.results);
     }
   };
+
   const dataBusiness = async () => {
     const data = await fetchData({
       endpoint: "business/",
@@ -74,9 +82,11 @@ const Inventory = () => {
 
 
   useEffect(() => {
-      dataInventorys();
-      dataAttributes();
-      dataBusiness();
+    dataInventorys();
+    dataAttributes();
+    dataBusiness();
+    console.log('respuesta', dataResponse[0].inventory_status);
+
   }, []);
 
   return (
@@ -140,11 +150,40 @@ const Inventory = () => {
                       <Td fontSize={12}>{inventory.business_name}</Td>
                       <Td fontSize={12}>{inventory.inventory_status_name}</Td>
                       <Td fontSize={12}>{inventory.total_cost}</Td>
-                      <Td fontSize={12}>
-                        <EditIcon
-                          marginLeft={5}
-                          onClick={() => handleEditClick(inventory)}
-                        />
+                      <Td fontSize={12} display={'flex'} alignItems={'center'}>
+                        {inventory.inventory_status === INVENTORY_STATUS_FINALIZED ? (
+                          <EditIcon
+                            marginLeft={5}
+                            color="gray.300" // Estilo visual para deshabilitar
+                            cursor="not-allowed" // Cursor de no permitido
+                          />
+                        ) : (
+                          <EditIcon
+                            marginLeft={5}
+                            cursor="pointer"
+                            onClick={() => handleEditClick(inventory)}
+                          />
+                        )}
+                        {inventory.inventory_status === INVENTORY_STATUS_FINALIZED ? (
+                          <Icon
+                            w={4}
+                            h={4}
+                            as={MdReceipt}
+                            marginLeft={5}
+                            color="gray.300" // Estilo visual para deshabilitar
+                            cursor="not-allowed" // Cursor de no permitido
+                          />
+                        ) : (
+                          <Link href={`/enter_data_into_inventory/${inventory.id}`}>
+                            <Icon
+                              w={4}
+                              h={4}
+                              as={MdReceipt}
+                              marginLeft={5}
+                              cursor="pointer"
+                            />
+                          </Link>
+                        )}
                       </Td>
                     </Tr>
                   ))

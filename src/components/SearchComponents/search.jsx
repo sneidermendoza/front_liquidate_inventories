@@ -4,7 +4,7 @@ import { Input, InputGroup, InputLeftAddon } from '@chakra-ui/react';
 import {SearchIcon } from "@chakra-ui/icons";
 
 
-const Search = ({ onSearch }) => {
+const Search = ({ onSearch,whit='50%' }) => {
   const [searchValue, setSearchValue] = useState('');
   const [debounceTimer, setDebounceTimer] = useState(null);
 
@@ -21,7 +21,7 @@ const Search = ({ onSearch }) => {
   // Crear una función de búsqueda debounced
   const debouncedSearch = debounce((value) => {
     onSearch(value);
-  }, 800);
+  }, 500);
 
   // Manejar el cambio en el valor de búsqueda
   const handleSearchChange = (event) => {
@@ -35,7 +35,7 @@ const Search = ({ onSearch }) => {
       <Input
         value={searchValue}
         onChange={handleSearchChange}
-        width={'50%'}
+        width={whit}
         borderRadius={'5%'} />
     </InputGroup>
   );
