@@ -55,7 +55,6 @@ const Menu = () => {
       token: token,
       showAlert: false,
     });
-    console.log("este es el role", data);
     if (data) {
       setRole(data);
     }

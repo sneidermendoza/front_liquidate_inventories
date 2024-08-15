@@ -54,7 +54,6 @@ const Business = () => {
       showAlert: false,
     });
     if (data) {
-      console.log(data);
       setResponseUserCustomer(data.data);
     }
   };

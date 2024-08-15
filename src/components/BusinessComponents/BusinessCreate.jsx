@@ -57,7 +57,6 @@ const BusinessCreate = ({
                 jsonBody: data,
                 token: token,
             });
-            console.log('desde create', response);
             if (response.status != 201) {
                 let errorMessage = "Ocurrió un error.";
                 if (response.error) {

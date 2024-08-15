@@ -76,7 +76,6 @@ const EnterDataIntoInventory = () => {
             }
         });
 
-        console.log(payload);
         try {
             const response = await apiRequest({
               endpoint: "detail_inventory/",

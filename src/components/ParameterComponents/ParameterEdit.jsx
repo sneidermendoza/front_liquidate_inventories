@@ -37,7 +37,6 @@ const ParameterEdit = ({
 
   useEffect(() => {
     if (parameter) {
-        console.log(parameter);
 
       setFormData({
         name: parameter.name,

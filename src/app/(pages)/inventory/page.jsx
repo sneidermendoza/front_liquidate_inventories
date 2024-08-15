@@ -85,7 +85,6 @@ const Inventory = () => {
     dataInventorys();
     dataAttributes();
     dataBusiness();
-    console.log('respuesta', dataResponse[0].inventory_status);
 
   }, []);
 

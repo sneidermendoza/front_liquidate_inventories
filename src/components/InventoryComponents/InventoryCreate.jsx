@@ -30,7 +30,6 @@ const InventoryCreate = ({
     const [formData, setFormData] = useState({
         business: "",
     });
-    console.log(responseBusiness);
     
     const { data: session } = useSession();
     const token = session.user.token;

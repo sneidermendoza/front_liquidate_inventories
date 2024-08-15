@@ -69,7 +69,6 @@ const LoadExcel = ({ isOpen, onClose, reloadProducts }) => {
         formData: formData,
         token: token,
       });
-      console.log('este es el form data',[...formData.entries()]);
       
 
       if (response.status !== 200) {

@@ -46,7 +46,6 @@ const MenuCreate = ({ isOpen, onClose, role, option, reloadProducts }) => {
     };
 
     try {
-        console.log('esta es la data', data);
       const response = await apiRequest({
         endpoint: "menu/",
         method: "POST",

@@ -39,7 +39,6 @@ const OptionEdit = ({
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
-    console.log('estas es la opcion', option);
     if (option) {
       setFormData({
         name: option.name,
