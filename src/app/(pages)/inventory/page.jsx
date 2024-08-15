@@ -173,7 +173,7 @@ const Inventory = () => {
                             cursor="not-allowed" // Cursor de no permitido
                           />
                         ) : (
-                          <Link href={`/enter_data_into_inventory/${inventory.id}`}>
+                          <Link href={`/enter_data_into_inventory/${inventory.id}`} target="_blank">
                             <Icon
                               w={4}
                               h={4}
