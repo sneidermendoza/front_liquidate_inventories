@@ -1,6 +1,6 @@
 "use client";
 import React, { useState } from "react";
-import {INVENTORY_STATUS_IN_PROCESS} from '@/enum/GeneralEnum'
+import {INVENTORY_STATUS_NOT_STARTED} from '@/enum/GeneralEnum'
 import {
     Modal,
     ModalOverlay,
@@ -49,7 +49,7 @@ const InventoryCreate = ({
         const data = {
             business: formData.business,
             total_cost: 0,
-            inventory_status: INVENTORY_STATUS_IN_PROCESS,
+            inventory_status: INVENTORY_STATUS_NOT_STARTED,
         };
 
         try {

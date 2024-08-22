@@ -1,6 +1,6 @@
 "use client"
 import React, { useEffect, useState } from "react";
-import { usePathname,useRouter  } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { useSession } from "next-auth/react";
 import { Card, CardBody, CardFooter, CardHeader, Flex, Heading, Spinner, Table, TableContainer, Tbody, Text, Th, Thead, Tr, Td, Button, Input } from "@chakra-ui/react";
 import { fetchData } from "@/utils/fetchData";
@@ -8,6 +8,8 @@ import Pagination from "@/components/PaginateComponents/Paginate";
 import Search from "@/components/SearchComponents/search"
 import Swal from "sweetalert2";
 import { apiRequest } from "@/services/fetchService";
+import { INVENTORY_STATUS_FINALIZED, INVENTORY_STATUS_IN_PROCESS } from "@/enum/GeneralEnum"
+
 
 
 
@@ -24,6 +26,8 @@ const EnterDataIntoInventory = () => {
     const [searchTerm, setSearchTerm] = useState("");
     const [productQuantities, setProductQuantities] = useState({});
     const router = useRouter();
+    const [isButtonDisabled, setIsButtonDisabled] = useState(true);
+
 
     const dataProduct = async (page = 1, showAlert = true, searchTerm = "") => {
         setIsLoading(true);
@@ -53,13 +57,21 @@ const EnterDataIntoInventory = () => {
     };
 
     const handleQuantityChange = (productCode, value) => {
-        setProductQuantities(prevQuantities => ({
-            ...prevQuantities,
-            [productCode]: value,
-        }));
+        setProductQuantities(prevQuantities => {
+            const updatedQuantities = {
+                ...prevQuantities,
+                [productCode]: value,
+            };
+
+            // Verificar si algún input tiene un valor positivo
+            const hasPositiveQuantity = Object.values(updatedQuantities).some(quantity => parseInt(quantity) > 0);
+            setIsButtonDisabled(!hasPositiveQuantity);
+
+            return updatedQuantities;
+        });
     };
 
-    const handleGenerateInventory = async () => {
+    const handleGenerateInventory = async (statusInvetory) => {
         setIsLoading(true);
 
         const inventoryId = id; // ID del inventario que estás manejando
@@ -69,6 +81,7 @@ const EnterDataIntoInventory = () => {
             const amount = productQuantities[product.code];
             if (amount > 0) {
                 payload.push({
+                    status_inventory: statusInvetory,
                     inventory: inventoryId,
                     product: product.id, // Asumiendo que `product.id` es el ID del producto
                     amount: parseInt(amount),
@@ -78,35 +91,49 @@ const EnterDataIntoInventory = () => {
 
         try {
             const response = await apiRequest({
-              endpoint: "detail_inventory/",
-              method: "POST",
-              jsonBody: payload,
-              token: token,
+                endpoint: "detail_inventory/",
+                method: "POST",
+                jsonBody: payload,
+                token: token,
             });
             if (response.status != 201) {
-              Swal.fire({
-                position: "center",
-                icon: "error",
-                title: response.error,
-                showConfirmButton: false,
-                timer: 3000,
-              });
-              setIsLoading(false);
+                Swal.fire({
+                    position: "center",
+                    icon: "error",
+                    title: response.error,
+                    showConfirmButton: false,
+                    timer: 3000,
+                });
+                setIsLoading(false);
             } else {
-              Swal.fire({
-                position: "center",
-                icon: "success",
-                title: response.message,
-                showConfirmButton: false,
-                timer: 1500,
-              });
-              setIsLoading(false);
-              router.push("/inventory");
+                Swal.fire({
+                    position: "center",
+                    icon: "success",
+                    title: response.message,
+                    showConfirmButton: false,
+                    timer: 1500,
+                });
+                setIsLoading(false);
+                router.push("/inventory");
             }
-          } catch (error) {
+        } catch (error) {
             console.error("Error submitting inventory:", error);
-          }
+        }
     };
+
+    const confirmated = (statusInvetory) => {
+        Swal.fire({
+            title: "Estas seguro de esta accion?",
+            showDenyButton: true,
+            icon: "warning",
+            confirmButtonText: "Si",
+        }).then((result) => {
+            /* Read more about isConfirmed, isDenied below */
+            if (result.isConfirmed) {
+                handleGenerateInventory(statusInvetory)
+            }
+        });
+    }
 
     useEffect(() => {
         if (token) {
@@ -157,52 +184,78 @@ const EnterDataIntoInventory = () => {
                                     <Th fontSize={12}>Unidad De Medida</Th>
                                     <Th fontSize={12}>Precio</Th>
                                     <Th fontSize={12}>cantidad</Th>
+                                    <Th fontSize={12}>total</Th>
                                 </Tr>
                             </Thead>
                             <Tbody>
                                 {dataResponse ? (
-                                    dataResponse.map((product, index) => (
-                                        <Tr key={index}>
-                                            <Td fontSize={11}>{product.code}</Td>
-                                            <Td fontSize={11}>{product.name}</Td>
-                                            <Td fontSize={11}>{product.measure_units_name}</Td>
-                                            <Td fontSize={11}>{product.price}</Td>
-                                            <Td fontSize={11}>
-                                                <Input
-                                                    type="number"
-                                                    textAlign={'center'}
-                                                    fontSize={12}
-                                                    w={20}
-                                                    h={6}
-                                                    borderColor={'#889cff'}
-                                                    value={productQuantities[product.code] || ""}
-                                                    onChange={(e) => handleQuantityChange(product.code, e.target.value)} />
-                                            </Td>
-                                        </Tr>
-                                    ))
+                                    dataResponse.map((product, index) => {
+                                        const quantity = productQuantities[product.code] || 0;
+                                        const total = product.price * quantity;
+
+                                        return (
+                                            <Tr key={index}>
+                                                <Td fontSize={11}>{product.code}</Td>
+                                                <Td fontSize={11}>{product.name}</Td>
+                                                <Td fontSize={11}>{product.measure_units_name}</Td>
+                                                <Td fontSize={11}>{product.price}</Td>
+                                                <Td fontSize={11}>
+                                                    <Input
+                                                        type="number"
+                                                        textAlign={'center'}
+                                                        fontSize={12}
+                                                        w={20}
+                                                        h={6}
+                                                        borderColor={'#889cff'}
+                                                        value={quantity === 0 ? '' : quantity}
+                                                        onChange={(e) => handleQuantityChange(product.code, e.target.value)}
+                                                    />
+                                                </Td>
+                                                <Td fontSize={11}>
+                                                    $ {total}
+                                                </Td>
+                                            </Tr>
+                                        );
+                                    })
                                 ) : (
                                     <Tr>
-                                        <Td colSpan={5} textAlign="center">
+                                        <Td colSpan={6} textAlign="center">
                                             No hay datos disponibles
                                         </Td>
                                     </Tr>
                                 )}
                             </Tbody>
+
                         </Table>
                     </TableContainer>
                 </CardBody>
                 <CardFooter h="10%" justifyContent={"space-between"} alignItems={"center"} >
-                    <Button
-                        colorScheme="blue"
-                        bg="blue.900"
-                        fontSize={13}
-                        h={10}
-                        w={185}
-                        m={'0px 10px 0px 0px'}
-                        onClick={handleGenerateInventory}
-                    >
-                        Generar Inventario
-                    </Button>
+                    <div>
+                        <Button
+                            colorScheme="blue"
+                            bg="blue.900"
+                            fontSize={13}
+                            h={10}
+                            w={185}
+                            m={'0px 10px 0px 0px'}
+                            onClick={() => confirmated(INVENTORY_STATUS_FINALIZED)}
+                            isDisabled={isButtonDisabled}
+                        >
+                            Finalizar Inventario
+                        </Button>
+                        <Button
+                            colorScheme="blue"
+                            bg="blue.900"
+                            fontSize={13}
+                            h={10}
+                            w={185}
+                            m={'0px 10px 0px 0px'}
+                            onClick={() => confirmated(INVENTORY_STATUS_IN_PROCESS)}
+                            isDisabled={isButtonDisabled}
+                        >
+                            Guardar Progreso
+                        </Button>
+                    </div>
                     <Pagination
                         currentPage={currentPage}
                         totalPages={totalPages}

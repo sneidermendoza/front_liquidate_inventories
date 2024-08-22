@@ -26,8 +26,10 @@ import {
 } from "@chakra-ui/react";
 import { EditIcon } from "@chakra-ui/icons";
 import { MdReceipt } from 'react-icons/md'
+import { RiFileExcel2Line } from "react-icons/ri";
 import { fetchData } from "@/utils/fetchData";
 import { INVENTORY_STATUS_FINALIZED } from "@/enum/GeneralEnum"
+import { apiRequest } from "@/services/fetchService";
 const Inventory = () => {
   const { data: session } = useSession();
   const [isLoading, setIsLoading] = useState(true);
@@ -38,6 +40,7 @@ const Inventory = () => {
   const [isModalOpenEdit, setIsModalOpenEdit] = useState(false);
   const [inventory, setInventory] = useState();
   const token = session.user.token;
+  const apiBaseUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
 
 
   const dataInventorys = async () => {
@@ -75,11 +78,39 @@ const Inventory = () => {
     }
   };
 
-  const handleEditClick = (inventory) => {
-    setInventory(inventory);
-    setIsModalOpenEdit(true);
-  };
+  const handleExcelClick = async (inventoryId) => {
+    try {
+      // Hacemos la petición a la API para obtener el archivo Excel
+      const response = await fetch(`${apiBaseUrl}detail_inventory?inventory_id=${inventoryId}&excel=true`, {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      });
 
+      if (!response.ok) {
+        throw new Error('Error al descargar el archivo');
+      }
+
+      // Convertimos la respuesta en un blob
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+
+      // Creamos un enlace temporal y lo clickeamos para descargar el archivo
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', `inventory_${inventoryId}.xlsx`);
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+
+      // Limpiamos el objeto URL
+      window.URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error('Error al descargar el archivo Excel:', error);
+    }
+  };
 
   useEffect(() => {
     dataInventorys();
@@ -150,19 +181,14 @@ const Inventory = () => {
                       <Td fontSize={12}>{inventory.inventory_status_name}</Td>
                       <Td fontSize={12}>{inventory.total_cost}</Td>
                       <Td fontSize={12} display={'flex'} alignItems={'center'}>
-                        {inventory.inventory_status === INVENTORY_STATUS_FINALIZED ? (
-                          <EditIcon
-                            marginLeft={5}
-                            color="gray.300" // Estilo visual para deshabilitar
-                            cursor="not-allowed" // Cursor de no permitido
-                          />
-                        ) : (
-                          <EditIcon
-                            marginLeft={5}
-                            cursor="pointer"
-                            onClick={() => handleEditClick(inventory)}
-                          />
-                        )}
+                        <Icon
+                          w={4}
+                          h={4}
+                          as={RiFileExcel2Line}
+                          marginLeft={5}
+                          cursor="pointer"
+                          onClick={() => handleExcelClick(inventory.id)}
+                        />
                         {inventory.inventory_status === INVENTORY_STATUS_FINALIZED ? (
                           <Icon
                             w={4}
@@ -207,13 +233,6 @@ const Inventory = () => {
         inventaryReload={dataInventorys}
         responseBusiness={responseBusiness}
       />
-      {/* <AttributesEdit
-        isOpen={isModalOpenEdit}
-        onClose={() => setIsModalOpenEdit(false)}
-        attributeReload={dataAttributes}
-        attribute={attribute}
-        responseParameter={responseParameter}
-      /> */}
     </Flex>
   );
 }
