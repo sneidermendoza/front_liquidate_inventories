@@ -66,7 +66,7 @@ const Products = () => {
       endpoint: "product/",
       token: token,
       elementId: productId,
-      callback: dataProduct(currentPage, false,searchTerm),
+      callback: () => dataProduct(currentPage, false,searchTerm),
     });
     setIsLoading(false);
   };

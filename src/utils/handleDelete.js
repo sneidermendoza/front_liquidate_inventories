@@ -24,8 +24,7 @@ export const handleDelete = async ({
           method: "DELETE",
           token,
           elementId,
-        });
-
+        });        
         if (response.status !== 200) {
           Swal.fire({
             position: "center",
