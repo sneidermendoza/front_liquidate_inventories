@@ -10,9 +10,6 @@ import Swal from "sweetalert2";
 import { apiRequest } from "@/services/fetchService";
 import { INVENTORY_STATUS_FINALIZED, INVENTORY_STATUS_IN_PROCESS } from "@/enum/GeneralEnum"
 
-
-
-
 const EnterDataIntoInventory = () => {
     const pathname = usePathname();
     const id = pathname.split('/').pop(); // Extraer el id de la ruta
@@ -27,7 +24,6 @@ const EnterDataIntoInventory = () => {
     const [productQuantities, setProductQuantities] = useState({});
     const router = useRouter();
     const [isButtonDisabled, setIsButtonDisabled] = useState(true);
-
 
     const dataProduct = async (page = 1, showAlert = true, searchTerm = "") => {
         setIsLoading(true);
@@ -51,16 +47,17 @@ const EnterDataIntoInventory = () => {
         setCurrentPage(page);
         dataProduct(page, false, searchTerm); // Desactiva la alerta al cambiar de página
     };
+
     const handleSearch = (searchTerm) => {
         setSearchTerm(searchTerm);
         dataProduct(1, false, searchTerm); // Reiniciar a la primera página y realizar búsqueda
     };
 
-    const handleQuantityChange = (productCode, value) => {
+    const handleQuantityChange = (productId, value) => {
         setProductQuantities(prevQuantities => {
             const updatedQuantities = {
                 ...prevQuantities,
-                [productCode]: value,
+                [productId]: value, // Usar el productId como la clave
             };
 
             // Verificar si algún input tiene un valor positivo
@@ -77,18 +74,17 @@ const EnterDataIntoInventory = () => {
         const inventoryId = id; // ID del inventario que estás manejando
         const payload = [];
 
-        dataResponse.forEach((product) => {
-            const amount = productQuantities[product.code];
+        // Recorremos todas las cantidades en lugar de solo los productos visibles
+        Object.entries(productQuantities).forEach(([productId, amount]) => {
             if (amount > 0) {
                 payload.push({
                     status_inventory: statusInvetory,
                     inventory: inventoryId,
-                    product: product.id, // Asumiendo que `product.id` es el ID del producto
+                    product: productId,
                     amount: parseInt(amount),
                 });
             }
         });
-
         try {
             const response = await apiRequest({
                 endpoint: "detail_inventory/",
@@ -123,12 +119,11 @@ const EnterDataIntoInventory = () => {
 
     const confirmated = (statusInvetory) => {
         Swal.fire({
-            title: "Estas seguro de esta accion?",
+            title: "¿Estás seguro de esta acción?",
             showDenyButton: true,
             icon: "warning",
-            confirmButtonText: "Si",
+            confirmButtonText: "Sí",
         }).then((result) => {
-            /* Read more about isConfirmed, isDenied below */
             if (result.isConfirmed) {
                 handleGenerateInventory(statusInvetory)
             }
@@ -172,30 +167,29 @@ const EnterDataIntoInventory = () => {
                 >
                     <Heading fontSize={20} w={'30%'}>Inventario No. {id} </Heading>
                     <Search onSearch={handleSearch} whit="100%" />
-
                 </CardHeader>
                 <CardBody h="90%" overflow="auto" className="scrollable">
                     <TableContainer>
                         <Table variant="simple" size='sm'>
                             <Thead>
                                 <Tr>
-                                    <Th fontSize={12}>Codigo</Th>
+                                    <Th fontSize={12}>Código</Th>
                                     <Th fontSize={12}>Nombre</Th>
                                     <Th fontSize={12}>Unidad De Medida</Th>
                                     <Th fontSize={12}>Precio</Th>
-                                    <Th fontSize={12}>cantidad</Th>
-                                    <Th fontSize={12}>total</Th>
+                                    <Th fontSize={12}>Cantidad</Th>
+                                    <Th fontSize={12}>Total</Th>
                                 </Tr>
                             </Thead>
                             <Tbody>
                                 {dataResponse ? (
                                     dataResponse.map((product, index) => {
-                                        const quantity = productQuantities[product.code] || 0;
+                                        const quantity = productQuantities[product.id] || 0; // Usar el ID del producto para los inputs
                                         const total = product.price * quantity;
 
                                         return (
                                             <Tr key={index}>
-                                                <Td fontSize={11}>{product.code}</Td>
+                                                <Td fontSize={11}>{product.code}</Td> {/* Mostrar el código del producto */}
                                                 <Td fontSize={11}>{product.name}</Td>
                                                 <Td fontSize={11}>{product.measure_units_name}</Td>
                                                 <Td fontSize={11}>{product.price}</Td>
@@ -208,7 +202,7 @@ const EnterDataIntoInventory = () => {
                                                         h={6}
                                                         borderColor={'#889cff'}
                                                         value={quantity === 0 ? '' : quantity}
-                                                        onChange={(e) => handleQuantityChange(product.code, e.target.value)}
+                                                        onChange={(e) => handleQuantityChange(product.id, e.target.value)}
                                                     />
                                                 </Td>
                                                 <Td fontSize={11}>
@@ -225,11 +219,10 @@ const EnterDataIntoInventory = () => {
                                     </Tr>
                                 )}
                             </Tbody>
-
                         </Table>
                     </TableContainer>
                 </CardBody>
-                <CardFooter h="10%" justifyContent={"space-between"} alignItems={"center"} >
+                <CardFooter h="10%" justifyContent={"space-between"} alignItems={"center"}>
                     <div>
                         <Button
                             colorScheme="blue"
