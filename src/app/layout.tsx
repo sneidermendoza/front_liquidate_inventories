@@ -16,7 +16,7 @@ export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en">
+    <html lang="en" style={{overflowY: "hidden"}}>
       <body className={inter.className}>
         <main className="container">
           <SessionAuthProvider>

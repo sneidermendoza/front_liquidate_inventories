@@ -18,6 +18,7 @@ const Sidebar = () => {
   const menus = session?.user.user.menus as Menu[];
 
   const [selectedOption, setSelectedOption] = useState(null);
+  
 
   const handleMenuClick = (option: any) => {
     setSelectedOption(option);
@@ -25,13 +26,13 @@ const Sidebar = () => {
 
   return (
     <Box
-      bg="gray.500"
-      color="Window"
-      border="1px solid"
-      height="100%"
-      width="100%"
-      borderTopRightRadius="10px"
-      borderBottomRightRadius="10px"
+      // bg="gray.500"
+      // color="Window"
+      // border="1px solid"
+      // height="100%"
+      // width="100%"
+      // borderTopRightRadius="10px"
+      // borderBottomRightRadius="10px"
     >
       <List >
         {menus &&
@@ -41,7 +42,7 @@ const Sidebar = () => {
               key={menu.id}
               marginTop={3}
               marginInlineStart={4}
-              color="Window"
+              color="blue.800"
             ><Link href={menu.link}>
                 <ListIcon as={ArrowRightIcon} color='blue.800' />
                 {menu.option}

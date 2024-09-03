@@ -1,14 +1,17 @@
-"use client"
+"use client";
+import { useDisclosure } from "@chakra-ui/react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import Navbar from "@/components/navbarComponents/Navbar";
 import Sidebar from "@/components/sidebarComponents/Sidebar";
+import { Drawer, DrawerBody, DrawerCloseButton, DrawerContent, DrawerHeader, DrawerOverlay, DrawerFooter, Button } from "@chakra-ui/react";
 import { Grid, GridItem } from "@chakra-ui/react";
 
 const AuthLayout = ({ children }) => {
   const session = useSession();
   const router = useRouter();
+  const { isOpen, onOpen, onClose } = useDisclosure(); // Hook para el Drawer
 
   useEffect(() => {
     // Verificar el estado de la sesión y redirigir si es necesario
@@ -17,24 +20,40 @@ const AuthLayout = ({ children }) => {
     }
   }, [session.status, router]);
 
-  // Renderizar los hijos solo si la sesión está autenticada
   return session.status === "authenticated" ? (
     <>
+      <Navbar onOpenSidebar={onOpen} />
+      
+      <Drawer
+        isOpen={isOpen}
+        placement="left"
+        onClose={onClose}
+        size="xs"
+        preserveScrollBarGap
+        sx={{
+          zIndex: "docked",
+        }}
+      >
+        <DrawerOverlay />
+        <DrawerContent
+          sx={{
+            zIndex: "docked", // Mantén el contenido del Drawer en la misma capa que el Drawer
+          }}
+        >
+          <DrawerCloseButton />
+          <DrawerHeader>Menu</DrawerHeader>
+          <DrawerBody>
+            <Sidebar />
+          </DrawerBody>
+        </DrawerContent>
+      </Drawer>
       <Grid
         templateRows="auto 1fr" // Navbar y luego el resto del espacio para los otros componentes
-        templateColumns="220px 1fr" // El Sidebar y luego el espacio para los otros componentes
+        templateColumns="1fr" // Solo una columna para el contenido principal
         height="100vh"
       >
-        <GridItem rowSpan={1} colSpan={2}>
-          {/* El Navbar ocupa toda la primera fila */}
-          <Navbar />
-        </GridItem>
-        <GridItem rowSpan={2} colSpan={1} height="100%" overflowY="hidden">
-          {/* El Sidebar ocupa toda la primera columna */}
-          <Sidebar />
-        </GridItem>
         <GridItem
-          rowSpan={1}
+          rowSpan={2}
           colSpan={1}
           overflowY="clip"
           overflowX="auto"
