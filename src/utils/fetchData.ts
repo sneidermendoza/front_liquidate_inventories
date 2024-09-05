@@ -1,7 +1,17 @@
 import Swal from "sweetalert2";
 import { apiRequest } from "@/services/fetchService";
 
-export const fetchData = async ({ endpoint, token, showAlert = false }) => {
+export type FetchDataParams = {
+  endpoint: string;
+  token: string;
+  showAlert?: boolean;
+};
+
+export const fetchData = async ({
+  endpoint,
+  token,
+  showAlert = false,
+}: FetchDataParams) => {
   try {
     const response = await apiRequest({
       endpoint: endpoint,
@@ -33,14 +43,16 @@ export const fetchData = async ({ endpoint, token, showAlert = false }) => {
     }
   } catch (error) {
     if (showAlert) {
-      Swal.fire({
-        position: "center",
-        icon: "error",
-        title: error.message,
-        showConfirmButton: false,
-        timer: 3000,
-      });
+      if (error instanceof Error) {
+        Swal.fire({
+          position: "center",
+          icon: "error",
+          title: error.message,
+          showConfirmButton: false,
+          timer: 3000,
+        });
+      }
     }
-    return ;
+    return;
   }
 };

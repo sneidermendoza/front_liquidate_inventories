@@ -1,25 +1,20 @@
-"use client"
+"use client";
 import { useState } from "react";
-import {
-  Button,
-  Flex,
-  Heading,
-  Input,
-  Stack,
-  Spinner,
-} from "@chakra-ui/react";
+import { Button, Flex, Heading, Stack, Spinner } from "@chakra-ui/react";
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import Swal from "sweetalert2";
+import Input from "@/components/Input";
+import FormControlInput from "../components/FormControlInput/index";
 
-const Home_page = () => {
+const useLogin = () => {
+  const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
-  const [email, setEmail] = useState('mariasol0304@gmail.com');
+  const [email, setEmail] = useState("mariasol0304@gmail.com");
   const [password, setPassword] = useState("Cc1045698090");
   const [emailError, setEmailError] = useState("");
-  const [isFormDisabled, setIsFormDisabled] = useState(false); // Estado para deshabilitar el formulario
-  const router = useRouter();
 
+  const [isFormDisabled, setIsFormDisabled] = useState(false);
 
   const handleSubmit = async () => {
     setIsLoading(true);
@@ -36,29 +31,55 @@ const Home_page = () => {
     setIsLoading(false);
 
     if (responseNextAuth?.error) {
-       Swal.fire({
-         position: "center",
-         icon: "error",
-         title: responseNextAuth.error.split(","),
-         showConfirmButton: false,
-         timer: 3000,
-       });
+      Swal.fire({
+        position: "center",
+        icon: "error",
+        title: responseNextAuth.error.split(","),
+        showConfirmButton: false,
+        timer: 3000,
+      });
       return;
     }
 
     router.push("/dashboard");
-  };
+  }; // Est
 
   const validateEmail = () => {
     const isValid = /\S+@\S+\.\S+/.test(email);
     setEmailError(isValid ? "" : "Correo no válido");
   };
 
+  return {
+    handleSubmit,
+    isLoading,
+    emailError,
+    isFormDisabled,
+    email,
+    setEmail,
+    password,
+    setPassword,
+    validateEmail,
+  };
+};
+
+const HomePage = () => {
+  const {
+    handleSubmit,
+    isLoading,
+    emailError,
+    isFormDisabled,
+    email,
+    setEmail,
+    password,
+    setPassword,
+    validateEmail,
+  } = useLogin();
+
   return (
     <Flex
       height="100vh"
       alignItems="center"
-      justifyContent="space-evenly"
+      justifyContent="center"
       background="gray.100"
       flexDirection={{ base: "column", md: "row" }}
       position="relative"
@@ -84,9 +105,7 @@ const Home_page = () => {
           />
         </Flex>
       )}
-      <Flex>
-        <Heading color="blue.800">Liquidate Inventory</Heading>
-      </Flex>
+
       <Stack
         direction="column"
         background="white"
@@ -97,34 +116,26 @@ const Home_page = () => {
         minHeight="200px"
       >
         <Heading color="blue.800" mb={6} textAlign="center">
-          Log in
+          <Flex>
+            <Heading color="blue.800">Liquidate Inventory</Heading>
+          </Flex>
         </Heading>
-        <Input
-          placeholder="sms@sms.com"
-          variant="filled"
-          mb={0}
-          type="email"
-          background="gray.50"
+        <FormControlInput
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           onBlur={validateEmail}
-          pointerEvents={isFormDisabled ? "none" : "auto"} // Deshabilitar input si el formulario está cargando
-        />
-        {emailError && (
-          <p style={{ color: "red", fontSize: "13px", textAlign: "center" }}>
-            {emailError}
-          </p>
-        )}
-        <Input
+          pointerEvents={isFormDisabled ? "none" : "auto"}
+          error={emailError}
+        ></FormControlInput>
+        <FormControlInput
           placeholder="******"
-          variant="filled"
-          mb={6}
           type="password"
-          background="gray.50"
+          mb={6}
           value={password}
           onChange={(e) => setPassword(e.target.value)}
-          pointerEvents={isFormDisabled ? "none" : "auto"} // Deshabilitar input si el formulario está cargando
-        />
+          pointerEvents={isFormDisabled ? "none" : "auto"}
+        ></FormControlInput>
+
         <Button
           colorScheme="blue"
           onClick={() => handleSubmit()}
@@ -137,4 +148,4 @@ const Home_page = () => {
   );
 };
 
-export default Home_page;
+export default HomePage;
