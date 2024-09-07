@@ -1,0 +1,14 @@
+.link_item{
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+    transition: all ease-in 0.1s;
+    padding: 6px;
+    padding-inline: 1rem;
+
+    &:hover{
+        background-color: #004aad;
+        color: white
+    }
+}

@@ -115,7 +115,7 @@ const Menu = () => {
           />
         </Flex>
       )}
-      <Card h="90vh">
+      <Card h="90vh" w={"100%"} maxW={"1024px"} margin={"auto"}>
         <CardHeader
           display="flex"
           justifyContent="space-between"

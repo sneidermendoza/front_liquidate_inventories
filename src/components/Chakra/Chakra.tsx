@@ -7,6 +7,11 @@ const theme = extendTheme({
     useSystemColorMode: false,
     initialColorMode: "light",
   },
+  colors: {
+    blue: {
+      800: "#004aad"
+    }
+  },
   // Aquí puedes configurar un prefijo de clase personalizado
   // Esto agregará un prefijo a todas las clases CSS generadas por Chakra UI
   // Ayuda a evitar conflictos de nombres de clases con otras bibliotecas de estilos
@@ -15,7 +20,7 @@ const theme = extendTheme({
 
 const Chakra = ({ children }: Readonly<{ children: React.ReactNode }>) => {
   return (
-  <ChakraProvider> 
+  <ChakraProvider theme={theme}> 
     {children} 
     </ChakraProvider>
   )

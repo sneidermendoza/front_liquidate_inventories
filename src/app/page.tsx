@@ -6,6 +6,8 @@ import { useRouter } from "next/navigation";
 import Swal from "sweetalert2";
 import Input from "@/components/Input";
 import FormControlInput from "../components/FormControlInput/index";
+import Image from "next/image";
+import { globalConfig } from "@/constants";
 
 const useLogin = () => {
   const router = useRouter();
@@ -105,44 +107,114 @@ const HomePage = () => {
           />
         </Flex>
       )}
+      <div
+        style={{
+          position: "absolute",
+          zIndex: 0,
+          width: "100%",
+          height: "100%",
+        }}
+      >
+        <Image
+          src={"/products.webp"}
+          width={400}
+          height={400}
+          style={{
+            width: "100%",
+            height: "100%",
+          }}
+          alt="Image background"
+          unoptimized
+        ></Image>
+        
+      </div>
+      <div 
+        style={{
+          position: "absolute",
+          width: "100%",
+          height: "100%",
+          zIndex: 1,
+          background: "linear-gradient(180deg, rgba(0,74,173,0.5) 90%, rgba(255,255,255,0) 100%)"
+        }}
+      >
+
+      </div>
 
       <Stack
-        direction="column"
+        direction="row"
         background="white"
-        p={10}
-        rounded={25}
-        spacing={6}
-        minWidth={{ base: "50%", md: "50%" }}
-        minHeight="200px"
+        style={{
+          borderRadius: "25px",
+        }}
+        width={"100%"}
+        maxWidth={"800px"}
+        height="500px"
+        zIndex={2}
+        className="login-content"
       >
-        <Heading color="blue.800" mb={6} textAlign="center">
-          <Flex>
-            <Heading color="blue.800">Liquidate Inventory</Heading>
-          </Flex>
-        </Heading>
-        <FormControlInput
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          onBlur={validateEmail}
-          pointerEvents={isFormDisabled ? "none" : "auto"}
-          error={emailError}
-        ></FormControlInput>
-        <FormControlInput
-          placeholder="******"
-          type="password"
-          mb={6}
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          pointerEvents={isFormDisabled ? "none" : "auto"}
-        ></FormControlInput>
-
-        <Button
-          colorScheme="blue"
-          onClick={() => handleSubmit()}
-          pointerEvents={isFormDisabled ? "none" : "auto"} // Deshabilitar botón si el formulario está cargando
+        <div
+         
+          className="first-div"
         >
-          Iniciar Sesión
-        </Button>
+          <Heading color="blue.800"  textAlign="center">
+            <Flex justifyContent={"center"}>
+              <Image
+                src={"/logo-alt.webp"}
+                width={500}
+                height={500}
+                
+                alt="Logo de Inventory"
+                className="logo"
+                unoptimized
+              ></Image>
+            </Flex>
+          </Heading>
+        </div>
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            width: "100%",
+            height: "100%",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
+          <div
+            style={{
+              width: "70%",
+              display: "flex",
+              flexDirection: "column",
+              gap: "8px"
+            }}
+          >
+            <FormControlInput
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              onBlur={validateEmail}
+              pointerEvents={isFormDisabled ? "none" : "auto"}
+              error={emailError}
+            ></FormControlInput>
+            <FormControlInput
+              placeholder="******"
+              type="password"
+              mb={6}
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              pointerEvents={isFormDisabled ? "none" : "auto"}
+            ></FormControlInput>
+
+            <Button
+              color={"white"}
+              backgroundColor={"blue.800"}
+              onClick={() => handleSubmit()}
+              pointerEvents={isFormDisabled ? "none" : "auto"}
+              className="button-init" // Deshabilitar botón si el formulario está cargando
+            >
+              Iniciar Sesión
+            </Button>
+          </div>
+        </div>
       </Stack>
     </Flex>
   );

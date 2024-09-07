@@ -11,7 +11,11 @@ import { Grid, GridItem } from "@chakra-ui/react";
 const AuthLayout = ({ children }) => {
   const session = useSession();
   const router = useRouter();
-  const { isOpen, onOpen, onClose } = useDisclosure(); // Hook para el Drawer
+  const { isOpen,  onOpen, isControlled, onClose } = useDisclosure(); // Hook para el Drawer
+
+  const handleClickItem = () => {
+    onClose()
+  }
 
   useEffect(() => {
     // Verificar el estado de la sesión y redirigir si es necesario
@@ -28,6 +32,7 @@ const AuthLayout = ({ children }) => {
         isOpen={isOpen}
         placement="left"
         onClose={onClose}
+        
         size="xs"
         preserveScrollBarGap
         sx={{
@@ -42,8 +47,8 @@ const AuthLayout = ({ children }) => {
         >
           <DrawerCloseButton />
           <DrawerHeader>Menu</DrawerHeader>
-          <DrawerBody>
-            <Sidebar />
+          <DrawerBody padding={0}>
+            <Sidebar onClickItem={handleClickItem} />
           </DrawerBody>
         </DrawerContent>
       </Drawer>
