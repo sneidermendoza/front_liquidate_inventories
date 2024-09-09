@@ -36,9 +36,6 @@ const AuthLayout = ({ children }: Readonly<{ children: React.ReactNode }>) => {
         
         size="xs"
         preserveScrollBarGap
-        sx={{
-          zIndex: "docked",
-        }}
       >
         <DrawerOverlay />
         <DrawerContent
