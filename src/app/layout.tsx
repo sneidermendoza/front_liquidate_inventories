@@ -5,6 +5,7 @@ import SessionAuthProvider from "@/context/SessionAuthProvider";
 import Chakra from "@/components/Chakra/Chakra";
 import Downtime from '@/components/Downtime/Downtime';
 import { globalConfig } from "@/constants";
+import Script from "next/script";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -28,7 +29,10 @@ export default function RootLayout({
           </SessionAuthProvider>
         </main>
       </body>
-      <script src="https://kit.fontawesome.com/ec20f55a3f.js" crossOrigin="anonymous"></script>
+      <Script
+      src="https://kit.fontawesome.com/ec20f55a3f.js" crossOrigin="anonymous"
+      ></Script>
+     
     </html>
   );
 }

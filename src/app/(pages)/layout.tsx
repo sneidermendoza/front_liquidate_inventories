@@ -8,7 +8,7 @@ import Sidebar from "@/components/sidebarComponents/Sidebar";
 import { Drawer, DrawerBody, DrawerCloseButton, DrawerContent, DrawerHeader, DrawerOverlay, DrawerFooter, Button } from "@chakra-ui/react";
 import { Grid, GridItem } from "@chakra-ui/react";
 
-const AuthLayout = ({ children }) => {
+const AuthLayout = ({ children }: Readonly<{ children: React.ReactNode }>) => {
   const session = useSession();
   const router = useRouter();
   const { isOpen,  onOpen, isControlled, onClose } = useDisclosure(); // Hook para el Drawer
@@ -35,9 +35,6 @@ const AuthLayout = ({ children }) => {
         
         size="xs"
         preserveScrollBarGap
-        sx={{
-          zIndex: "docked",
-        }}
       >
         <DrawerOverlay />
         <DrawerContent
