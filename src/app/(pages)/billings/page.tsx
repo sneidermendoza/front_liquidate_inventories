@@ -105,12 +105,19 @@ const Billing = () => {
     {
       id: "attribute_name",
       cell: (row) => {
-        return <> <Switch checked={row.attribute === 1} onChange={(e) => {
+        return <>{row.attribute_name}</>;
+      },
+      text: "Estado",
+    },
+    {
+      id: "attribute",
+      cell: (row) => {
+        return <> <Switch disabled={row.attribute === 1} checked={row.attribute === 1} onChange={(e) => {
           console.log("Change", e.target.checked);
           handleUpdateState(e.target.checked, row)
         }} name={row.id.toString()}></Switch></>;
       },
-      text: "Estado",
+      text: "Cambiar estado",
     },
   ];
   const { data: session } = useSession();
