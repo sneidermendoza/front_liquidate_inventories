@@ -1,6 +1,6 @@
 export type ApiRequestParams<T = any> = {
   endpoint: string
-  method: "GET" | "POST" | "PATCH" | "DELETE"
+  method: "GET" | "POST" | "PATCH" | "DELETE" | "PUT"
   jsonBody?: T | null
   formData?: FormData | null
   elementId?: number
@@ -46,7 +46,10 @@ export async function apiRequest<T, ResponseApi=any>({
     }
   
     try {
-      const response = await fetch(url, options);
+      console.log("Fetch Options", options)
+      const response = await fetch(url, {
+        ...options,
+      });
       const data = await response.json();
       return data as ResponseApi;
     } catch (error) {

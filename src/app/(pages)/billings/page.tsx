@@ -1,6 +1,8 @@
 "use client";
 
+import Switch from "@/components/Switch";
 import TableWrapper, { TableColumn } from "@/components/TableWrapper";
+import { apiRequest } from "@/services/fetchService";
 import { fetchData } from "@/utils/fetchData";
 import {
   Flex,
@@ -19,7 +21,9 @@ type Billing = {
   attribute_name: string;
   total_profit: number;
   inventory: number;
-  atribute: number;
+  attribute: number;
+  created_date: string
+  business_name: string
 };
 
 type BillingResponse = {
@@ -30,6 +34,45 @@ type BillingResponse = {
 };
 
 const Billing = () => {
+  const handleUpdateState = async (state: boolean, row: Billing) => {
+    console.log("state", state, state ? 1 : 2)
+   
+    setDataResponse((data) => {
+      const newData = [...data];
+      const index = newData.findIndex(billing => billing.id === row.id);
+      if(index !== -1){
+        newData[index] = {
+          ...row,
+          attribute: state ? 1 : 2
+        }
+      }
+      return newData
+    })
+    const response = await apiRequest({
+      endpoint: `billing/${row.id}`,
+      method: "PUT",
+      token: token,
+      jsonBody: {
+        ...row,
+        attribute: state ? 1 : 2,
+      }
+    });
+    if(!response.error){
+
+    }else{
+      setDataResponse((data) => {
+        const newData = [...data];
+        const index = newData.findIndex(billing => billing.id === row.id);
+        if(index !== -1){
+          newData[index] = {
+            ...row,
+            attribute: state ? 1 : 2
+          }
+        }
+        return newData
+      })
+    }
+  }
   const columns: TableColumn<Billing>[] = [
     {
       id: "id",
@@ -39,15 +82,39 @@ const Billing = () => {
       text: "Id",
     },
     {
+      id: "business_name",
+      cell: (row) => {
+        return <>{row.business_name}</>;
+      },
+      text: "Cliente",
+    },
+    {
       id: "total_profit",
       cell: (row) => {
-        return <>$ {row.total_profit.toLocaleString("es-CO")}</>;
+        return <><strong>$ {row.total_profit.toLocaleString("es-CO")}</strong></>;
       },
       text: "Ganancia",
     },
+    {
+      id: "created_date",
+      cell: (row) => {
+        return <>{row.created_date}</>;
+      },
+      text: "Fecha",
+    },
+    {
+      id: "attribute_name",
+      cell: (row) => {
+        return <> <Switch checked={row.attribute === 1} onChange={(e) => {
+          console.log("Change", e.target.checked);
+          handleUpdateState(e.target.checked, row)
+        }} name={row.id.toString()}></Switch></>;
+      },
+      text: "Estado",
+    },
   ];
   const { data: session } = useSession();
-  const [dataResponse, setDataResponse] = useState<BillingResponse[]>([]);
+  const [dataResponse, setDataResponse] = useState<Billing[]>([]);
   const token = session?.user.token;
   const dataMenu = async () => {
     const data = await fetchData({
@@ -60,6 +127,7 @@ const Billing = () => {
       setDataResponse(data.data.results);
     }
   };
+
 
   useEffect(() => {
     dataMenu();
