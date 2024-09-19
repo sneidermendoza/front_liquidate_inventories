@@ -233,7 +233,7 @@ const EnterDataIntoInventory = () => {
               marginLeft: 10,
             }}
           >
-            <span>Total:</span>{" "}
+            <span>Total:</span>
             {getTotal().toLocaleString("es-CO", {
               style: "currency",
               currency: "COP",
@@ -264,7 +264,7 @@ const EnterDataIntoInventory = () => {
 
                     return (
                       <Tr key={index}>
-                        <Td fontSize={11}>{product.code}</Td>{" "}
+                        <Td fontSize={11}>{product.code}</Td>
                         {/* Mostrar el código del producto */}
                         <Td fontSize={11}>{product.name}</Td>
                         <Td fontSize={11}>{product.measure_units_name}</Td>
