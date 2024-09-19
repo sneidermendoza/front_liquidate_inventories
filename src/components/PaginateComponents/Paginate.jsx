@@ -28,7 +28,7 @@ const Pagination = ({ currentPage, totalPages, onPageChange }) => {
     pageNumbers.push(totalPages); // Última página
   }
 
-  return (
+  return totalPages> 0 &&  (
     <Box display="flex" justifyContent="center" alignItems="center" mt="4"             margin={'0px'}
 >
       <Button

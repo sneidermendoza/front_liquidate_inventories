@@ -159,7 +159,7 @@ const HomePage = () => {
           <Heading color="blue.800"  textAlign="center">
             <Flex justifyContent={"center"}>
               <Image
-                src={"/logo-alt.webp"}
+                src={"/logo.webp"}
                 width={500}
                 height={500}
                 
