@@ -21,13 +21,13 @@ const Navbar = ({ onOpenSidebar }: NavbarProps) => {
       as="nav"
       p="10px"
       w="100%"
-      bg="white"
       alignItems="center"
       position="relative" // Asegura que el z-index se aplique correctamente
       zIndex="docked"
       style={{
         boxShadow: "0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1)"
-      }} // zIndex alto para mantener el Navbar sobre otros elementos
+      }}
+      className="bg-blue-100" // zIndex alto para mantener el Navbar sobre otros elementos
     >
       
       <IconButton

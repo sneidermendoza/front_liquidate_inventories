@@ -24,6 +24,7 @@ import {
 import { EditIcon, DeleteIcon } from "@chakra-ui/icons";
 import { fetchData } from "@/utils/fetchData";
 import { handleDelete } from "@/utils/handleDelete";
+import Search from "@/components/SearchComponents/search";
 
 const MeasureUnits = () => {
   const { data: session } = useSession();
@@ -33,17 +34,27 @@ const MeasureUnits = () => {
   const [isModalOpenEdit, setIsModalOpenEdit] = useState(false);
   const [measureUnits, setmeasureUnits] = useState();
   const token = session.user.token;
+  const [searchTerm, setSearchTerm] = useState("");
 
+  const dataMeasureUnits = async (page, showAlert, searchTerm) => {
+    const params = new URLSearchParams();
+    if (page) params.append("page", page);
+    if (searchTerm) params.append("search", searchTerm);
 
-  const dataMeasureUnits = async () => {
+    const url = `measure_units?${params.toString()}`;
     const data = await fetchData({
-      endpoint: "measure_units/",
+      endpoint: url,
       token: token,
       showAlert: true,
     });
     if (data) {
       setDataResponse(data.data.results);
     }
+  };
+
+  const handleSearch = (searchTerm) => {
+    setSearchTerm(searchTerm);
+    dataMeasureUnits(1, false, searchTerm); // Reiniciar a la primera página y realizar búsqueda
   };
 
   const handleEditClick = (measureUnits) => {
@@ -96,6 +107,7 @@ const MeasureUnits = () => {
           alignItems="center"
         >
           <Heading fontSize={20}>Unidades De Medidas</Heading>
+          <Search onSearch={handleSearch} whit="100%" />
           <Button
             colorScheme="blue"
             bg="blue.900"
@@ -109,7 +121,7 @@ const MeasureUnits = () => {
         </CardHeader>
         <CardBody h="90%" overflow="auto" className="scrollable">
           <TableContainer>
-            <Table variant="simple" size='sm'>
+            <Table variant="simple" size="sm">
               <Thead>
                 <Tr>
                   <Th fontSize={12}>Id</Th>

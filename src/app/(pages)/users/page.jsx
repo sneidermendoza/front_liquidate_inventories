@@ -133,7 +133,8 @@ const User = () => {
           justifyContent="space-between"
           alignItems="center"
         >
-          <Heading fontSize={30}>Usuarios</Heading>
+          <Heading fontSize={30} w={"30%"}>Usuarios</Heading>
+          <Search onSearch={handleSearch} whit="100%" />
           <Button
             colorScheme="blue"
             bg="blue.900"
