@@ -1,9 +1,8 @@
-"use client"
+"use client";
 import React, { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
 import InventoryCreate from "@/components/InventoryComponents/InventoryCreate";
 import Link from "next/link";
-
 
 import {
   Card,
@@ -25,11 +24,13 @@ import {
   Icon,
 } from "@chakra-ui/react";
 import { EditIcon } from "@chakra-ui/icons";
-import { MdReceipt } from 'react-icons/md'
+import { MdReceipt } from "react-icons/md";
 import { RiFileExcel2Line } from "react-icons/ri";
 import { fetchData } from "@/utils/fetchData";
-import { INVENTORY_STATUS_FINALIZED } from "@/enum/GeneralEnum"
+import { INVENTORY_STATUS_FINALIZED } from "@/enum/GeneralEnum";
 import { apiRequest } from "@/services/fetchService";
+import Search from "@/components/SearchComponents/search";
+import Pagination from "@/components/PaginateComponents/Paginate";
 const Inventory = () => {
   const { data: session } = useSession();
   const [isLoading, setIsLoading] = useState(true);
@@ -39,21 +40,44 @@ const Inventory = () => {
   const [isModalOpenCreate, setIsModalOpenCreate] = useState(false);
   const [isModalOpenEdit, setIsModalOpenEdit] = useState(false);
   const [inventory, setInventory] = useState();
+  const [searchTerm, setSearchTerm] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
   const token = session.user.token;
   const apiBaseUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
 
-
-  const dataInventorys = async () => {
+  const dataInventorys = async (
+    page = 1,
+    showAlert = true,
+    searchTerm = ""
+  ) => {
+    const params = new URLSearchParams();
+    if (page) params.append("page", page.toString());
+    if (searchTerm) params.append("search", searchTerm);
+    const url = `inventory?${params.toString()}`;
     const data = await fetchData({
-      endpoint: "inventory/",
-      token: token,
-      showAlert: true,
+      endpoint: url,
+      token,
+      showAlert,
     });
     if (data) {
-      setDataResponse(data.data.results);
+      const { count, results } = data.data;
+      setDataResponse(results);
+      const calculatedTotalPages = Math.ceil(count / results.length);
+      setTotalPages(calculatedTotalPages);
     }
 
     setIsLoading(false);
+  };
+
+  const handleSearch = (searchTerm) => {
+    setSearchTerm(searchTerm);
+    dataInventorys(1, false, searchTerm); // Reiniciar a la primera página y realizar búsqueda
+  };
+
+  const handlePageChange = (page) => {
+    setCurrentPage(page);
+    dataInventorys(page, false, searchTerm); // Desactiva la alerta al cambiar de página
   };
 
   const dataAttributes = async () => {
@@ -81,16 +105,19 @@ const Inventory = () => {
   const handleExcelClick = async (inventoryId) => {
     try {
       // Hacemos la petición a la API para obtener el archivo Excel
-      const response = await fetch(`${apiBaseUrl}detail_inventory?inventory_id=${inventoryId}&excel=true`, {
-        method: 'GET',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
-      });
+      const response = await fetch(
+        `${apiBaseUrl}detail_inventory?inventory_id=${inventoryId}&excel=true`,
+        {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
 
       if (!response.ok) {
-        throw new Error('Error al descargar el archivo');
+        throw new Error("Error al descargar el archivo");
       }
 
       // Convertimos la respuesta en un blob
@@ -98,9 +125,9 @@ const Inventory = () => {
       const url = window.URL.createObjectURL(blob);
 
       // Creamos un enlace temporal y lo clickeamos para descargar el archivo
-      const link = document.createElement('a');
+      const link = document.createElement("a");
       link.href = url;
-      link.setAttribute('download', `inventory_${inventoryId}.xlsx`);
+      link.setAttribute("download", `inventory_${inventoryId}.xlsx`);
       document.body.appendChild(link);
       link.click();
       link.remove();
@@ -108,7 +135,7 @@ const Inventory = () => {
       // Limpiamos el objeto URL
       window.URL.revokeObjectURL(url);
     } catch (error) {
-      console.error('Error al descargar el archivo Excel:', error);
+      console.error("Error al descargar el archivo Excel:", error);
     }
   };
 
@@ -116,7 +143,6 @@ const Inventory = () => {
     dataInventorys();
     dataAttributes();
     dataBusiness();
-
   }, []);
 
   return (
@@ -142,7 +168,7 @@ const Inventory = () => {
           />
         </Flex>
       )}
-      <Card h="90vh">
+      <Card className="flex-1">
         <CardHeader
           display="flex"
           justifyContent="space-between"
@@ -162,7 +188,7 @@ const Inventory = () => {
         </CardHeader>
         <CardBody h="90%" overflow="auto" className="scrollable">
           <TableContainer>
-            <Table variant="simple" size='sm'>
+            <Table variant="simple" size="sm">
               <Thead>
                 <Tr>
                   <Th fontSize={12}>Id</Th>
@@ -180,7 +206,7 @@ const Inventory = () => {
                       <Td fontSize={12}>{inventory.business_name}</Td>
                       <Td fontSize={12}>{inventory.inventory_status_name}</Td>
                       <Td fontSize={12}>{inventory.total_cost}</Td>
-                      <Td fontSize={12} display={'flex'} alignItems={'center'}>
+                      <Td fontSize={12} display={"flex"} alignItems={"center"}>
                         <Icon
                           w={4}
                           h={4}
@@ -189,7 +215,8 @@ const Inventory = () => {
                           cursor="pointer"
                           onClick={() => handleExcelClick(inventory.id)}
                         />
-                        {inventory.inventory_status === INVENTORY_STATUS_FINALIZED ? (
+                        {inventory.inventory_status ===
+                        INVENTORY_STATUS_FINALIZED ? (
                           <Icon
                             w={4}
                             h={4}
@@ -199,7 +226,10 @@ const Inventory = () => {
                             cursor="not-allowed" // Cursor de no permitido
                           />
                         ) : (
-                          <Link href={`/enter_data_into_inventory/${inventory.id}`} target="_blank">
+                          <Link
+                            href={`/enter_data_into_inventory/${inventory.id}`}
+                            target="_blank"
+                          >
                             <Icon
                               w={4}
                               h={4}
@@ -224,7 +254,12 @@ const Inventory = () => {
           </TableContainer>
         </CardBody>
         <CardFooter h="10%" justifyContent={"center"} alignItems={"center"}>
-          <Text fontSize={10}> By: SMS Correo: Mariasol0304@gmail.com</Text>
+          <Search onSearch={handleSearch} />
+          <Pagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPageChange={handlePageChange}
+          />
         </CardFooter>
       </Card>
       <InventoryCreate
@@ -235,5 +270,5 @@ const Inventory = () => {
       />
     </Flex>
   );
-}
-export default Inventory
+};
+export default Inventory;

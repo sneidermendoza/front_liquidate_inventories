@@ -24,10 +24,7 @@ const Navbar = ({ onOpenSidebar }: NavbarProps) => {
       alignItems="center"
       position="relative" // Asegura que el z-index se aplique correctamente
       zIndex="docked"
-      style={{
-        boxShadow: "0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1)"
-      }}
-      className="bg-blue-100" // zIndex alto para mantener el Navbar sobre otros elementos
+      className=" border-b border-blue-100 drop-shadow-sm" // zIndex alto para mantener el Navbar sobre otros elementos
     >
       
       <IconButton
@@ -35,26 +32,17 @@ const Navbar = ({ onOpenSidebar }: NavbarProps) => {
         icon={<HamburgerIcon color={"ActiveCaption"} />}
         onClick={onOpenSidebar}
         colorScheme="blue.200"
-        mr={4} // Margen derecho para separar del título
+        mr={4}
+        className="block md:!hidden"
+         // Margen derecho para separar del título
       />
-      <Image
-        src={"/logo.webp"}
-        width={500}
-        height={500}
-        alt="Logo de Inventory"
-        style={{
-          width: 50,
-          aspectRatio: "1/1",
-          objectFit: "cover"
-        }}
-        unoptimized
-      ></Image>
+      
     
       <Spacer />
       <Button
        variant={"outline"}
-        w="80px"
-        h="40px"
+        w="60px"
+        h="30px"
       
         
         rounded={10}

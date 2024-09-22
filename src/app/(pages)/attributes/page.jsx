@@ -102,7 +102,7 @@ const Attributes = () => {
           />
         </Flex>
       )}
-      <Card h="90vh">
+      <Card className="flex-1">
         <CardHeader
           display="flex"
           justifyContent="space-between"

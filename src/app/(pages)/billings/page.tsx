@@ -119,16 +119,19 @@ const Billing = () => {
       cell: (row) => {
         return (
           <>
-            {" "}
-            <Switch
-              disabled={row.attribute === 1}
-              checked={row.attribute === 1}
-              onChange={(e) => {
-                console.log("Change", e.target.checked);
-                handleUpdateState(e.target.checked, row);
-              }}
-              name={row.id.toString()}
-            ></Switch>
+            <div className="flex  items-center gap-2">
+              <span>{row.attribute === 1 ? "Finalizado" : "En proceso"}</span>
+              <Switch
+                disabled={row.attribute === 1}
+                checked={row.attribute === 1}
+                onChange={(e) => {
+                  console.log("Change", e.target.checked);
+                  handleUpdateState(e.target.checked, row);
+                }}
+                name={row.id.toString()}
+                className="disabled:opacity-60 "
+              ></Switch>
+            </div>
           </>
         );
       },
@@ -146,14 +149,20 @@ const Billing = () => {
     showAlert: boolean = true,
     searchTerm: string = ""
   ) => {
+    const params = new URLSearchParams();
+    if (page) params.append("page", page.toString());
+    if (searchTerm) params.append("search", searchTerm);
+    const url = `billing?${params.toString()}`;
     const data = await fetchData({
-      endpoint: "billing/",
+      endpoint: url,
       token: token ?? "",
-      showAlert: true,
+      showAlert,
     });
     if (data) {
-      console.log(data.data.results);
-      setDataResponse(data.data.results);
+      const { count, results } = data.data;
+      setDataResponse(results);
+      const calculatedTotalPages = Math.ceil(count / results.length);
+      setTotalPages(calculatedTotalPages);
     }
   };
 
@@ -174,8 +183,8 @@ const Billing = () => {
   return (
     <>
       <Flex direction="column" h="100%">
-        <Card h="90vh">
-          <CardHeader>
+        <Card className="flex-1">
+          <CardHeader className="flex items-center">
             <Heading fontSize={30} w={"30%"}>
               Facturación
             </Heading>
@@ -184,7 +193,7 @@ const Billing = () => {
           <CardBody h="90%" overflow="auto" className="scrollable">
             <TableWrapper columns={columns} rows={dataResponse}></TableWrapper>
           </CardBody>
-          <CardFooter h="10%" justifyContent={"center"} alignItems={"center"}>
+          <CardFooter h="10%" justifyContent={"end"} alignItems={"center"}>
             <Pagination
               currentPage={currentPage}
               totalPages={totalPages}

@@ -19,8 +19,8 @@ export default function RootLayout({
 }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en" style={{overflowY: "hidden"}}>
-      <body className={inter.className}>
-        <main className="w-full">
+      <body className={`${inter.className} overflow-hidden h-screen min-h-screen`}>
+        <main className="w-full bg-white h-full">
           <SessionAuthProvider>
             <Chakra>
               <Downtime /> 

@@ -1,4 +1,4 @@
-"use client"
+"use client";
 import React, { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
 import BusinessCreate from "@/components/BusinessComponents/BusinessCreate";
@@ -24,7 +24,8 @@ import {
 import { EditIcon, DeleteIcon } from "@chakra-ui/icons";
 import { fetchData } from "@/utils/fetchData";
 import { handleDelete } from "@/utils/handleDelete";
-import Search from "@/components/SearchComponents/search"
+import Search from "@/components/SearchComponents/search";
+import Pagination from "@/components/PaginateComponents/Paginate";
 const Business = () => {
   const { data: session } = useSession();
   const [isLoading, setIsLoading] = useState(true);
@@ -33,20 +34,40 @@ const Business = () => {
   const [isModalOpenCreate, setIsModalOpenCreate] = useState(false);
   const [isModalOpenEdit, setIsModalOpenEdit] = useState(false);
   const [business, setBusiness] = useState();
+  const [searchTerm, setSearchTerm] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
   const token = session.user.token;
 
-
-  const dataBusiness = async () => {
+  const dataBusiness = async (page = 1, showAlert = true, searchTerm = "") => {
+    const params = new URLSearchParams();
+    if (page) params.append("page", page.toString());
+    if (searchTerm) params.append("search", searchTerm);
+    const url = `business/?${params.toString()}`;
     const data = await fetchData({
-      endpoint: "business/",
-      token: token,
-      showAlert: true,
+      endpoint: url,
+      token,
+      showAlert,
     });
     if (data) {
-      setDataResponse(data.data.results);
+      const { count, results } = data.data;
+      setDataResponse(results);
+      const calculatedTotalPages = Math.ceil(count / results.length);
+      setTotalPages(calculatedTotalPages);
     }
     setIsLoading(false);
   };
+
+  const handleSearch = (searchTerm) => {
+    setSearchTerm(searchTerm);
+    dataBusiness(1, false, searchTerm); // Reiniciar a la primera página y realizar búsqueda
+  };
+
+  const handlePageChange = (page) => {
+    setCurrentPage(page);
+    dataMenu(page, false, searchTerm); // Desactiva la alerta al cambiar de página
+  };
+
   const dataUserCustomer = async () => {
     const data = await fetchData({
       endpoint: "users/get_user_business/",
@@ -57,7 +78,6 @@ const Business = () => {
       setResponseUserCustomer(data.data);
     }
   };
-
 
   const handleEditClick = (business) => {
     setBusiness(business);
@@ -76,8 +96,8 @@ const Business = () => {
   };
 
   useEffect(() => {
-      dataBusiness();
-      dataUserCustomer();
+    dataBusiness();
+    dataUserCustomer();
   }, []);
 
   return (
@@ -103,13 +123,14 @@ const Business = () => {
           />
         </Flex>
       )}
-      <Card h="90vh">
+      <Card className="flex-1">
         <CardHeader
           display="flex"
           justifyContent="space-between"
           alignItems="center"
         >
           <Heading fontSize={20}>Negocios</Heading>
+
           <Button
             colorScheme="blue"
             bg="blue.900"
@@ -123,12 +144,12 @@ const Business = () => {
         </CardHeader>
         <CardBody h="90%" overflow="auto" className="scrollable">
           <TableContainer>
-            <Table variant="simple" size='sm'>
+            <Table variant="simple" size="sm">
               <Thead>
                 <Tr>
                   <Th fontSize={12}>Id</Th>
                   <Th fontSize={12}>Cliente</Th>
-                  <Th fontSize={12}>Nombre  Del Negocio</Th>
+                  <Th fontSize={12}>Nombre Del Negocio</Th>
                   <Th fontSize={12}>Opciones</Th>
                 </Tr>
               </Thead>
@@ -163,9 +184,12 @@ const Business = () => {
           </TableContainer>
         </CardBody>
         <CardFooter h="20%" justifyContent={"rigth"} alignItems={"center"}>
-        <Search
-
-        />
+          <Search onSearch={handleSearch} />
+          <Pagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPageChange={handlePageChange}
+          />
         </CardFooter>
       </Card>
       <BusinessCreate
@@ -173,7 +197,6 @@ const Business = () => {
         onClose={() => setIsModalOpenCreate(false)}
         businesReload={dataBusiness}
         responseUserCustomer={responseUserCustomer}
-
       />
       <BusinessEdit
         isOpen={isModalOpenEdit}
@@ -184,6 +207,6 @@ const Business = () => {
       />
     </Flex>
   );
-}
+};
 
-export default Business
+export default Business;

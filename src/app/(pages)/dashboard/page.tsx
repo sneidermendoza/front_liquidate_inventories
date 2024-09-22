@@ -11,7 +11,7 @@ const Dashboard = () => {
 
   return (
     <Flex direction="column" h="100%">
-      <Card h="90vh">
+      <Card className="flex-1">
         <CardHeader>
           <Heading size="lg">Dashboard</Heading>
         </CardHeader>

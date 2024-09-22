@@ -82,7 +82,6 @@ const HomePage = () => {
       height="100vh"
       alignItems="center"
       justifyContent="center"
-      background="gray.100"
       flexDirection={{ base: "column", md: "row" }}
       position="relative"
     >
@@ -126,18 +125,6 @@ const HomePage = () => {
           alt="Image background"
           unoptimized
         ></Image>
-        
-      </div>
-      <div 
-        style={{
-          position: "absolute",
-          width: "100%",
-          height: "100%",
-          zIndex: 1,
-          background: "linear-gradient(180deg, rgba(0,74,173,0.5) 90%, rgba(255,255,255,0) 100%)"
-        }}
-      >
-
       </div>
 
       <Stack
@@ -150,21 +137,19 @@ const HomePage = () => {
         maxWidth={"800px"}
         height="500px"
         zIndex={2}
-        className="login-content"
+        className="login-content shadow-md"
       >
-        <div
-         
-          className="first-div"
-        >
-          <Heading color="blue.800"  textAlign="center">
+        
+
+        <div className=" w-1/2 rounded-l-3xl flex justify-center items-center bg-blue-100">
+          <Heading className="bg-blue-100" textAlign="center">
             <Flex justifyContent={"center"}>
               <Image
                 src={"/logo.webp"}
                 width={500}
                 height={500}
-                
                 alt="Logo de Inventory"
-                className="logo"
+                className="size-28 animate-pulse"
                 unoptimized
               ></Image>
             </Flex>
@@ -185,9 +170,13 @@ const HomePage = () => {
               width: "70%",
               display: "flex",
               flexDirection: "column",
-              gap: "8px"
+              gap: "8px",
+              alignItems: "center"
             }}
           >
+            <h2 className="text-center max-w-[20ch] text-pretty text-black mb-4 text-xl">
+              Software de liquidación de inventario
+            </h2>
             <FormControlInput
               value={email}
               onChange={(e) => setEmail(e.target.value)}
@@ -205,11 +194,10 @@ const HomePage = () => {
             ></FormControlInput>
 
             <Button
-              color={"white"}
-              backgroundColor={"blue.800"}
               onClick={() => handleSubmit()}
+              disabled={isFormDisabled}
               pointerEvents={isFormDisabled ? "none" : "auto"}
-              className="button-init" // Deshabilitar botón si el formulario está cargando
+              className="!bg-blue-500 w-full !text-white  disabled:opacity-60 hover:!bg-blue-700 transition-colors duration-200" // Deshabilitar botón si el formulario está cargando
             >
               Iniciar Sesión
             </Button>

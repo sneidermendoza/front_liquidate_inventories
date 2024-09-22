@@ -4,17 +4,17 @@ export type SwitchProps = {
     name: string
 } & React.DetailedHTMLProps<React.InputHTMLAttributes<HTMLInputElement>, HTMLInputElement>;
 
-export default function Switch({name, ...rest}: SwitchProps) {
+export default function Switch({name, disabled, ...rest}: SwitchProps) {
     const id = useMemo(() => {
         return `${name}`
     }, [])
   return (
     <>
       <div className="toggler">
-        <input {...rest} id={id} name={id} type="checkbox" value="1" />
-        <label htmlFor={id}>
+        <input {...rest} id={id} disabled={disabled} name={id} type="checkbox" value="1" />
+        <label htmlFor={id} className={`toggler-label ${disabled ? "!opacity-60" : ""}`}>
           <svg
-            className="toggler-on"
+            className={`toggler-on ${disabled ? "!opacity-60" : ""}`}
             version="1.1"
             xmlns="http://www.w3.org/2000/svg"
             viewBox="0 0 130.2 130.2"
