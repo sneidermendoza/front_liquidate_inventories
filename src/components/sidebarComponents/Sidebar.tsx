@@ -43,6 +43,7 @@ const Sidebar = (props: SideBarProps) => {
           }}
           unoptimized
         ></Image>
+        <span className="ml-2 text-xl text-blue-600">Liquidate Inventory</span>
       </div>
 
       <List className="px-4 py-4 w-full bg-blue-200 border-r border-blue-100 flex-1">
