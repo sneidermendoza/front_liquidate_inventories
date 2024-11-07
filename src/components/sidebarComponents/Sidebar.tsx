@@ -20,6 +20,8 @@ const Sidebar = (props: SideBarProps) => {
   const pathname = usePathname();
   const menus = session?.user.user.menus as Menu[];
 
+  console.log("Menus", menus)
+
   const [selectedOption, setSelectedOption] = useState<Menu | null>(null);
 
   const handleMenuClick = (option: Menu) => {
@@ -32,7 +34,7 @@ const Sidebar = (props: SideBarProps) => {
     <Box padding={0} className="min-w-56 h-full flex flex-col">
       <div className="w-full flex border-b border-blue-100 p-2 justify-center items-center">
         <Image
-          src={"/logo.webp"}
+          src={"/logo_inventory.svg"}
           width={500}
           height={500}
           alt="Logo de Inventory"
@@ -43,17 +45,17 @@ const Sidebar = (props: SideBarProps) => {
           }}
           unoptimized
         ></Image>
-        <span className="ml-2 text-xl text-blue-600">Liquidate Inventory</span>
+        <span className="ml-2 text-lg text-blue-600 text-nowrap">Liquidate Inventory</span>
       </div>
 
-      <List className="px-4 py-4 w-full bg-blue-200 border-r border-blue-100 flex-1">
+      <List className="px-4 py-4 w-full bg-blue-600 border-r border-blue-100 flex-1">
         {menus &&
           menus.map((menu) => {
             const icon = menu.icon ?? "fa-solid fa-rocket";
             return (
               <ListItem key={menu.id}>
                 <button
-                  className="px-4 py-2 capitalize rounded-md w-full text-[#404040] hover:bg-blue-100 hover:text-blue-600 flex gap-2 items-center"
+                  className="px-4 py-2 capitalize rounded-md w-full text-[white] hover:bg-blue-100 hover:text-blue-600 flex gap-2 items-center"
                   onClick={(e) => handleMenuClick(menu)}
                 >
                   <i className={icon}></i>

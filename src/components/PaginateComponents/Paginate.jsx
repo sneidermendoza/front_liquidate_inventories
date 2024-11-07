@@ -34,7 +34,7 @@ const Pagination = ({ currentPage, totalPages, onPageChange }) => {
       <Button
         onClick={() => onPageChange(currentPage - 1)}
         isDisabled={!canGoBack}
-        colorScheme="teal"
+        className="!border !border-blue-600 !text-blue-600"
         mx="1"
         size="sm"
       >
@@ -50,10 +50,10 @@ const Pagination = ({ currentPage, totalPages, onPageChange }) => {
             key={index}
             onClick={() => onPageChange(number)}
             isDisabled={number === currentPage}
-            colorScheme={number === currentPage ? "blue" : "gray"}
+            className={number === currentPage ? "!bg-blue-600 !text-white" : "!border !border-blue-600 !text-blue-600"}
             mx="1"
             size="sm"
-            variant={number === currentPage ? "solid" : "outline"}
+            
           >
             {number}
           </Button>
@@ -62,7 +62,7 @@ const Pagination = ({ currentPage, totalPages, onPageChange }) => {
       <Button
         onClick={() => onPageChange(currentPage + 1)}
         isDisabled={!canGoForward}
-        colorScheme="teal"
+        className="!border !border-blue-600 !text-blue-600"
         mx="1"
         size="sm"
       >

@@ -139,13 +139,11 @@ const HomePage = () => {
         zIndex={2}
         className="login-content shadow-md"
       >
-        
-
-        <div className=" w-1/2 rounded-l-3xl flex justify-center items-center bg-blue-100">
-          <Heading className="bg-blue-100" textAlign="center">
+        <div className=" w-1/2 rounded-l-3xl flex justify-center items-center bg-blue-100 text-white">
+          <Heading className="" textAlign="center">
             <Flex justifyContent={"center"}>
               <Image
-                src={"/logo.webp"}
+                src={"/logo_inventory.svg"}
                 width={500}
                 height={500}
                 alt="Logo de Inventory"
@@ -171,11 +169,11 @@ const HomePage = () => {
               display: "flex",
               flexDirection: "column",
               gap: "8px",
-              alignItems: "center"
+              alignItems: "center",
             }}
           >
             <h2 className="text-center max-w-[20ch] text-pretty text-black mb-4 text-xl">
-              Software de liquidación de inventario
+              Liquidate Inventory
             </h2>
             <FormControlInput
               value={email}
@@ -197,7 +195,7 @@ const HomePage = () => {
               onClick={() => handleSubmit()}
               disabled={isFormDisabled}
               pointerEvents={isFormDisabled ? "none" : "auto"}
-              className="!bg-blue-500 w-full !text-white  disabled:opacity-60 hover:!bg-blue-700 transition-colors duration-200" // Deshabilitar botón si el formulario está cargando
+              className="!bg-blue-600 w-full !text-white  disabled:opacity-60 hover:!bg-blue-600/80 transition-colors duration-200" // Deshabilitar botón si el formulario está cargando
             >
               Iniciar Sesión
             </Button>

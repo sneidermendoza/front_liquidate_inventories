@@ -47,9 +47,7 @@ const Navbar = ({ onOpenSidebar }: NavbarProps) => {
         
         rounded={10}
         onClick={() => signOut()}
-        style={{
-          color: "blue"
-        }}
+        className="!border !border-blue-600 !text-blue-600"
       >
         <i className="fa-solid fa-right-from-bracket"></i>
       </Button>

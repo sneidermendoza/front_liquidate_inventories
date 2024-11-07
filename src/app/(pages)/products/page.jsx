@@ -120,8 +120,7 @@ const Products = () => {
           <Heading fontSize={20}>Productos</Heading>
           <div className="butons_group">
           <Button
-            colorScheme="blue"
-            bg="blue.900"
+            className="!border !border-blue-600 !text-blue-600"
             fontSize={13}
             h={10}
             w={185}
@@ -131,8 +130,7 @@ const Products = () => {
             Cargar Excel De Productos
           </Button>
           <Button
-            colorScheme="blue"
-            bg="blue.900"
+            className="!bg-blue-600 !text-white"
             fontSize={13}
             h={10}
             w={170}
