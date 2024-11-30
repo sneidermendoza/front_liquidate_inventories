@@ -192,7 +192,7 @@ const EnterDataIntoInventory = () => {
   }, []);
 
   return (
-    <Flex direction="column" h="100%">
+    <Flex direction="column" >
       {isLoading && (
         <Flex
           position="absolute"
@@ -214,7 +214,7 @@ const EnterDataIntoInventory = () => {
           />
         </Flex>
       )}
-      <Card className="flex-1">
+      <Card >
         <CardHeader
           display="flex"
           justifyContent="space-between"

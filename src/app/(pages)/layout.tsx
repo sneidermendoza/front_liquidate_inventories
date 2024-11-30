@@ -20,7 +20,7 @@ import { Grid, GridItem } from "@chakra-ui/react";
 const AuthLayout = ({ children }: Readonly<{ children: React.ReactNode }>) => {
   const session = useSession();
   const router = useRouter();
-  const { isOpen, onOpen, isControlled, onClose } = useDisclosure(); // Hook para el Drawer
+  const { isOpen, onToggle, isControlled, onClose } = useDisclosure(); // Hook para el Drawer
 
   const handleClickItem = () => {
     onClose();
@@ -36,9 +36,9 @@ const AuthLayout = ({ children }: Readonly<{ children: React.ReactNode }>) => {
   return session.status === "authenticated" ? (
     <>
       <div className="flex w-full  h-full">
-        <Sidebar  onClickItem={handleClickItem} />
+        <Sidebar isOpen={isOpen} onClickItem={handleClickItem} />
         <div className="flex flex-col w-full">
-          <Navbar onOpenSidebar={onOpen} />
+          <Navbar onOpenSidebar={onToggle} />
 
           <div className="flex-1 p-4 overflow-y-clip overflow-x-auto max-h-screen">
             {children}

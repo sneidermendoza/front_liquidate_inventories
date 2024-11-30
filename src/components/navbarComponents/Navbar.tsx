@@ -24,7 +24,7 @@ const Navbar = ({ onOpenSidebar }: NavbarProps) => {
       alignItems="center"
       position="relative" // Asegura que el z-index se aplique correctamente
       zIndex="docked"
-      className=" border-b border-blue-100 drop-shadow-sm" // zIndex alto para mantener el Navbar sobre otros elementos
+      className=" border-b border-blue-100 drop-shadow-sm justify-between" // zIndex alto para mantener el Navbar sobre otros elementos
     >
       
       <IconButton
@@ -33,12 +33,10 @@ const Navbar = ({ onOpenSidebar }: NavbarProps) => {
         onClick={onOpenSidebar}
         colorScheme="blue.200"
         mr={4}
-        className="block md:!hidden"
+      
          // Margen derecho para separar del título
       />
       
-    
-      <Spacer />
       <Button
        variant={"outline"}
         w="60px"

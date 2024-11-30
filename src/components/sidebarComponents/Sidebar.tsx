@@ -11,6 +11,7 @@ import Image from "next/image";
 
 export type SideBarProps = {
   onClickItem?: () => void;
+  isOpen?: boolean;
 };
 
 const Sidebar = (props: SideBarProps) => {
@@ -20,7 +21,7 @@ const Sidebar = (props: SideBarProps) => {
   const pathname = usePathname();
   const menus = session?.user.user.menus as Menu[];
 
-  console.log("Menus", menus)
+  console.log("Menus", menus);
 
   const [selectedOption, setSelectedOption] = useState<Menu | null>(null);
 
@@ -31,7 +32,10 @@ const Sidebar = (props: SideBarProps) => {
   };
 
   return (
-    <Box padding={0} className="min-w-56 h-full flex flex-col">
+    <Box
+      padding={0}
+      className={`${styles.sidebar} ${props.isOpen ? styles.minimize : ""}`}
+    >
       <div className="w-full flex border-b border-blue-100 p-2 justify-center items-center">
         <Image
           src={"/logo_inventory.svg"}
@@ -45,10 +49,14 @@ const Sidebar = (props: SideBarProps) => {
           }}
           unoptimized
         ></Image>
-        <span className="ml-2 text-lg text-blue-600 text-nowrap">Liquidate Inventory</span>
+        {!props.isOpen && (
+          <span className="ml-2 text-lg text-blue-600 text-nowrap">
+            Liquidate Inventory
+          </span>
+        )}
       </div>
 
-      <List className="px-4 py-4 w-full bg-blue-600 border-r border-blue-100 flex-1">
+      <List className={` w-full bg-blue-600 border-r border-blue-100 flex-1 py-4 ${!props.isOpen ? "px-4 ": ""}`}>
         {menus &&
           menus.map((menu) => {
             const icon = menu.icon ?? "fa-solid fa-rocket";
@@ -59,9 +67,11 @@ const Sidebar = (props: SideBarProps) => {
                   onClick={(e) => handleMenuClick(menu)}
                 >
                   <i className={icon}></i>
-                  <span className=" text-nowrap max-w-24 text-ellipsis overflow-hidden inline-block">
-                    {menu.option}
-                  </span>
+                  {!props.isOpen && (
+                    <span className=" text-nowrap max-w-24 text-ellipsis overflow-hidden inline-block">
+                      {menu.option}
+                    </span>
+                  )}
                 </button>
               </ListItem>
             );

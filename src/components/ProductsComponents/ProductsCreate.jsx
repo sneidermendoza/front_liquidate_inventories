@@ -177,11 +177,11 @@ const ProductsCreate = ({ isOpen, onClose, measureUnits, reloadProducts }) => {
         </ModalBody>
         <ModalFooter>
           <Flex justify="space-between" w="100%">
-            <Button colorScheme="blue" onClick={handleSubmit}>
-              Crear
-            </Button>
             <Button colorScheme="red" onClick={onClose}>
               Cancelar
+            </Button>
+            <Button colorScheme="blue" onClick={handleSubmit}>
+              Crear
             </Button>
           </Flex>
         </ModalFooter>

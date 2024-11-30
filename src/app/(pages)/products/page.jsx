@@ -89,7 +89,7 @@ const Products = () => {
   }, []);
 
   return (
-    <Flex direction="column" h="100%">
+    <Flex direction="column" >
       {isLoading && (
         <Flex
           position="absolute"
@@ -116,6 +116,7 @@ const Products = () => {
           display="flex"
           justifyContent="space-between"
           alignItems="center"
+          className="portrait:!px-0 portrait:!flex-col portrait:!gap-4"
         >
           <Heading fontSize={20}>Productos</Heading>
           <div className="butons_group">
@@ -186,9 +187,11 @@ const Products = () => {
             </Table>
           </TableContainer>
         </CardBody>
-        <CardFooter h="10%" justifyContent={"center"} alignItems={"center"}>
+        <CardFooter h="10%" justifyContent={"center"} className="pt-0" alignItems={"center"}>
         <Search
           onSearch={handleSearch}
+          className={"portrait:w-[30%] w-fit"}
+          whit="100%"
           />
           <Pagination
             currentPage={currentPage}

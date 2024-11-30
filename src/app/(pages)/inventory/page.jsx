@@ -186,7 +186,7 @@ const Inventory = () => {
             Crear Inventario
           </Button>
         </CardHeader>
-        <CardBody h="90%" overflow="auto" className="scrollable">
+        <CardBody  overflow="auto" className="scrollable">
           <TableContainer>
             <Table variant="simple" size="sm">
               <Thead>
