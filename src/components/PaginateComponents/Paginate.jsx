@@ -3,6 +3,7 @@
 import { Box, Button, Text } from "@chakra-ui/react";
 
 const Pagination = ({ currentPage, totalPages, onPageChange }) => {
+  console.log("Paginations params", { currentPage, totalPages });
   const canGoBack = currentPage > 1;
   const canGoForward = currentPage < totalPages;
   const pageNumbers = [];

@@ -56,13 +56,11 @@ const EnterDataIntoInventory = () => {
       });
       if (data) {
         setDataResponse(data.data.results);
-        if (!pagesCalculated) {
-          const calculatedTotalPages = Math.ceil(
-            data.data.count / data.data.results.length
-          );
-          setTotalPages(calculatedTotalPages);
-          setPagesCalculated(true);
-        }
+        const calculatedTotalPages = Math.ceil(
+          data.data.count / data.data.results.length
+        );
+        setTotalPages(calculatedTotalPages);
+        setPagesCalculated(true);
         data.data.results.forEach((product) => {
           if (productQuantities[product.id]) {
             const copyProductQuantities = structuredClone(productQuantities);

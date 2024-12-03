@@ -4,12 +4,30 @@ import { useSession } from "next-auth/react";
 import LoadExcel from "@/components/ProductsComponents/LoadExcel";
 import ProductsCreate from "@/components/ProductsComponents/ProductsCreate";
 import ProductsEdit from "@/components/ProductsComponents/ProductsEdit";
-import { Card, CardBody, CardFooter, CardHeader, Flex, Heading, Spinner, Table, TableContainer, Tbody, Text, Th, Thead, Tr, Td, Button } from "@chakra-ui/react";
+import {
+  Card,
+  CardBody,
+  CardFooter,
+  CardHeader,
+  Flex,
+  Heading,
+  Spinner,
+  Table,
+  TableContainer,
+  Tbody,
+  Text,
+  Th,
+  Thead,
+  Tr,
+  Td,
+  Button,
+} from "@chakra-ui/react";
 import { EditIcon, DeleteIcon } from "@chakra-ui/icons";
 import { fetchData } from "@/utils/fetchData";
 import { handleDelete } from "@/utils/handleDelete";
 import Pagination from "@/components/PaginateComponents/Paginate";
-import Search from "@/components/SearchComponents/search"
+import Search from "@/components/SearchComponents/search";
+import { formatValueCurrency } from "@/utils";
 
 const Products = () => {
   const { data: session } = useSession();
@@ -35,11 +53,11 @@ const Products = () => {
     });
     if (data) {
       setDataResponse(data.data.results);
-      if (!pagesCalculated) {
-        const calculatedTotalPages = Math.ceil(data.data.count / data.data.results.length);
-        setTotalPages(calculatedTotalPages);
-        setPagesCalculated(true);
-      }
+      const calculatedTotalPages = Math.ceil(
+        data.data.count / data.data.results.length
+      );
+      setTotalPages(calculatedTotalPages);
+      setPagesCalculated(true);
     }
     setIsLoading(false);
   };
@@ -66,14 +84,14 @@ const Products = () => {
       endpoint: "product/",
       token: token,
       elementId: productId,
-      callback: () => dataProduct(currentPage, false,searchTerm),
+      callback: () => dataProduct(currentPage, false, searchTerm),
     });
     setIsLoading(false);
   };
 
   const handlePageChange = (page) => {
     setCurrentPage(page);
-    dataProduct(page, false,searchTerm); // Desactiva la alerta al cambiar de página
+    dataProduct(page, false, searchTerm); // Desactiva la alerta al cambiar de página
   };
 
   const handleSearch = (searchTerm) => {
@@ -83,13 +101,13 @@ const Products = () => {
 
   useEffect(() => {
     if (token) {
-      dataProduct(currentPage,true,searchTerm);
+      dataProduct(currentPage, true, searchTerm);
       dataMeasureUnits();
     }
   }, []);
 
   return (
-    <Flex direction="column" >
+    <Flex direction="column">
       {isLoading && (
         <Flex
           position="absolute"
@@ -120,31 +138,30 @@ const Products = () => {
         >
           <Heading fontSize={20}>Productos</Heading>
           <div className="butons_group">
-          <Button
-            className="!border !border-blue-600 !text-blue-600"
-            fontSize={13}
-            h={10}
-            w={185}
-            m={'0px 10px 0px 0px'}
-            onClick={() => setIsModalOpenExcel(true)}
-          >
-            Cargar Excel De Productos
-          </Button>
-          <Button
-            className="!bg-blue-600 !text-white"
-            fontSize={13}
-            h={10}
-            w={170}
-            onClick={() => setIsModalOpenCreate(true)}
-          >
-            Crear Nuevos productos
-          </Button>
+            <Button
+              className="!border !border-blue-600 !text-blue-600"
+              fontSize={13}
+              h={10}
+              w={185}
+              m={"0px 10px 0px 0px"}
+              onClick={() => setIsModalOpenExcel(true)}
+            >
+              Cargar Excel De Productos
+            </Button>
+            <Button
+              className="!bg-blue-600 !text-white"
+              fontSize={13}
+              h={10}
+              w={170}
+              onClick={() => setIsModalOpenCreate(true)}
+            >
+              Crear Nuevos productos
+            </Button>
           </div>
-          
         </CardHeader>
         <CardBody h="90%" overflow="auto" className="scrollable">
           <TableContainer>
-            <Table variant="simple" size='sm'>
+            <Table variant="simple" size="sm">
               <Thead>
                 <Tr>
                   <Th fontSize={12}>Codigo</Th>
@@ -163,7 +180,14 @@ const Products = () => {
                       <Td fontSize={12}>{product.name}</Td>
                       <Td fontSize={12}>{product.description}</Td>
                       <Td fontSize={12}>{product.measure_units_name}</Td>
-                      <Td fontSize={12}>{product.price}</Td>
+                      <Td fontSize={12}>
+                        {formatValueCurrency(
+                          Number(product.price ?? 0, {
+                            minimumFractionDigits: 0,
+                            maximumFractionDigits: 0,
+                          })
+                        )}
+                      </Td>
                       <Td fontSize={12}>
                         <EditIcon
                           marginLeft={5}
@@ -187,11 +211,16 @@ const Products = () => {
             </Table>
           </TableContainer>
         </CardBody>
-        <CardFooter h="10%" justifyContent={"center"} className="pt-0" alignItems={"center"}>
-        <Search
-          onSearch={handleSearch}
-          className={"portrait:w-[30%] w-fit"}
-          whit="100%"
+        <CardFooter
+          h="10%"
+          justifyContent={"center"}
+          className="pt-0"
+          alignItems={"center"}
+        >
+          <Search
+            onSearch={handleSearch}
+            className={"portrait:w-[30%] w-fit"}
+            whit="100%"
           />
           <Pagination
             currentPage={currentPage}

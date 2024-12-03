@@ -22,6 +22,16 @@ import { useSession } from "next-auth/react";
 import { apiRequest } from "@/services/fetchService";
 import Swal from "sweetalert2";
 
+import { z } from "zod";
+
+const productSchema = z.object({
+  code: z.number().nullable(),
+  name: z.string().min(1, "El nombre es requerido"),
+  description: z.string().optional().nullable(),
+  price: z.number().min(1, "El precio es requerido"),
+  measure_units: z.number().min(1, "La unidad de medida es requerida"),
+});
+
 const ProductsEdit = ({
   isOpen,
   onClose,
@@ -61,17 +71,28 @@ const ProductsEdit = ({
   };
 
   const handleSubmit = async () => {
-    setIsLoading(true);
-
     const data = {
       code: formData.code ? parseInt(formData.code, 10) : null,
       name: formData.name,
       description: formData.description || null,
-      price: formData.price,
-      measure_units: parseInt(formData.measureUnit, 10),
+      price: formData.price ? Number(formData.price) : 0,
+      measure_units: formData.measureUnit
+        ? parseInt(formData.measureUnit, 10)
+        : 0,
     };
-
+    const validation = productSchema.safeParse(data);
+    if (!validation.success) {
+      console.log("Issues", { issues: validation.error.issues[0] });
+      return Swal.fire({
+        title: "Error",
+        text: validation.error.issues[0].message,
+        icon: "error",
+        confirmButtonText: "Aceptar",
+        zIndex: 999999999,
+      });
+    }
     try {
+      setIsLoading(true);
       const response = await apiRequest({
         endpoint: `product/${product.id}/`,
         method: "PUT",
@@ -109,6 +130,8 @@ const ProductsEdit = ({
         showConfirmButton: false,
         timer: 3000,
       });
+      setIsLoading(false);
+    } finally {
       setIsLoading(false);
     }
   };

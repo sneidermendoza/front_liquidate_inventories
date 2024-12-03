@@ -31,6 +31,8 @@ import { INVENTORY_STATUS_FINALIZED } from "@/enum/GeneralEnum";
 import { apiRequest } from "@/services/fetchService";
 import Search from "@/components/SearchComponents/search";
 import Pagination from "@/components/PaginateComponents/Paginate";
+import { format } from "path";
+import { formatValueCurrency } from "@/utils";
 const Inventory = () => {
   const { data: session } = useSession();
   const [isLoading, setIsLoading] = useState(true);
@@ -205,7 +207,7 @@ const Inventory = () => {
                       <Td fontSize={12}>{inventory.id}</Td>
                       <Td fontSize={12}>{inventory.business_name}</Td>
                       <Td fontSize={12}>{inventory.inventory_status_name}</Td>
-                      <Td fontSize={12}>{inventory.total_cost}</Td>
+                      <Td fontSize={12}>{formatValueCurrency(inventory.total_cost)}</Td>
                       <Td fontSize={12} display={"flex"} alignItems={"center"}>
                         <Icon
                           w={4}
