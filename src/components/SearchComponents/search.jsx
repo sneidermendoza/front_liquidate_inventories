@@ -4,7 +4,7 @@ import { Input, InputGroup, InputLeftAddon } from '@chakra-ui/react';
 import {SearchIcon } from "@chakra-ui/icons";
 
 
-const Search = ({ onSearch,whit='50%', className }) => {
+const Search = ({ onSearch,whit='50%', className="" }) => {
   const [searchValue, setSearchValue] = useState('');
   const [debounceTimer, setDebounceTimer] = useState(null);
 
