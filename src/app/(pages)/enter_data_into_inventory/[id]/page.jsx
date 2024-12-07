@@ -35,16 +35,32 @@ const EnterDataIntoInventory = () => {
   const pathname = usePathname();
   const id = pathname.split("/").pop(); // Extraer el id de la ruta
   const { data: session } = useSession();
+  const [dataDetail, setDataDetail] = useState({});
   const [isLoading, setIsLoading] = useState(false);
   const [dataResponse, setDataResponse] = useState();
   const token = session.user.token;
   const [totalPages, setTotalPages] = useState(0);
   const [currentPage, setCurrentPage] = useState(1);
+
+  //const [totalCalculated, setTotalCalculated] = useState(0);
   const [pagesCalculated, setPagesCalculated] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [productQuantities, setProductQuantities] = useState({});
   const router = useRouter();
   const [isButtonDisabled, setIsButtonDisabled] = useState(true);
+
+  const getDataInventory = async () => {
+    try {
+      const response = await apiRequest({
+        endpoint: `inventory/${id}`,
+        method: "GET",
+        token,
+      });
+      console.log("Response getDataInventory", response);
+      setDataDetail(response.data);
+      //setTotalCalculated(response.data.total_cost);
+    } catch (error) {}
+  }
 
   const dataProduct = async (page = 1, showAlert = true, searchTerm = "") => {
     setIsLoading(true);
@@ -78,6 +94,9 @@ const EnterDataIntoInventory = () => {
   };
 
   const getTotal = () => {
+    const quantities = Object.entries(productQuantities).filter(
+      ([key, productQuantity]) => productQuantity.quantity > 0
+    );
     const results = Object.entries(productQuantities).map(
       ([key, productQuantity]) => {
         return productQuantity.price * (productQuantity.quantity || 0);
@@ -86,10 +105,10 @@ const EnterDataIntoInventory = () => {
 
     console.log("Results", results);
 
-    return results?.reduce(
-      (accumulator, currentValue) => accumulator + currentValue,
-      0
-    );
+    return {
+      totalAccumulated: results.reduce((a, b) => a + b, 0),
+      totalProducts: quantities.length,
+    };
   };
 
   const handlePageChange = (page) => {
@@ -116,6 +135,10 @@ const EnterDataIntoInventory = () => {
       const hasPositiveQuantity = Object.values(updatedProductQuantities).some(
         (productQuantity) => parseInt(productQuantity.quantity) > 0
       );
+      // const updatedTotal = Object.values(updatedProductQuantities).filter(
+      //   (productQuantity) => parseInt(productQuantity.quantity) > 0)
+      //   .reduce((a, b) => a + b.price * b.quantity, 0);
+      // setTotalCalculated(updatedTotal);
       setIsButtonDisabled(!hasPositiveQuantity);
 
       return updatedProductQuantities;
@@ -186,11 +209,12 @@ const EnterDataIntoInventory = () => {
   useEffect(() => {
     if (token) {
       dataProduct(currentPage, true, searchTerm);
+      getDataInventory()
     }
   }, []);
 
   return (
-    <Flex direction="column" >
+    <Flex direction="column">
       {isLoading && (
         <Flex
           position="absolute"
@@ -212,33 +236,51 @@ const EnterDataIntoInventory = () => {
           />
         </Flex>
       )}
-      <Card >
+      <Card>
         <CardHeader
           display="flex"
           justifyContent="space-between"
           alignItems="center"
         >
-          <Heading fontSize={20} w={"30%"}>
-            Inventario No. {id}
+          <Heading fontSize={20} w={"20%"} className="flex flex-col gap-1">
+            <span>Inventario No. {id}</span>
+            <span className="text-xs">{dataDetail?.business_name}</span>
           </Heading>
-          <Search onSearch={handleSearch} whit="100%" />
-          <div
-            style={{
-              fontWeight: "600",
-              fontSize: "1.2rem",
-              display: "flex",
-              gap: "8px",
-              marginLeft: 10,
-            }}
-          >
-            <span>Total:</span>
-            {getTotal().toLocaleString("es-CO", {
-              style: "currency",
-              currency: "COP",
-            })}
+          <Search onSearch={handleSearch} whit="100%" className="!w-[30%]" />
+          <div className="flex items-center flex-1 justify-end">
+            <div
+              style={{
+                fontWeight: "600",
+                fontSize: "1.2rem",
+                display: "flex",
+                gap: "8px",
+                marginLeft: 10,
+              }}
+              className="items-center"
+            >
+              <span className="whitespace-nowrap">Productos inventariados:</span>
+              {getTotal().totalProducts.toLocaleString("es-CO", {
+                style: "decimal"
+              })}
+            </div>
+            <div
+              style={{
+                fontWeight: "600",
+                fontSize: "1.2rem",
+                display: "flex",
+                gap: "8px",
+                marginLeft: 10,
+              }}
+            >
+              <span>Total:</span>
+              {getTotal().totalAccumulated.toLocaleString("es-CO", {
+                style: "currency",
+                currency: "COP",
+              })}
+            </div>
           </div>
         </CardHeader>
-        <CardBody h="90%" overflow="auto" className="scrollable">
+        <CardBody overflow="auto" className="scrollable max-h-full">
           <TableContainer>
             <Table variant="simple" size="sm">
               <Thead>
@@ -314,9 +356,9 @@ const EnterDataIntoInventory = () => {
           </TableContainer>
         </CardBody>
         <CardFooter
-          h="10%"
           justifyContent={"space-between"}
           alignItems={"center"}
+          className="!pt-0"
         >
           <div
             style={{
