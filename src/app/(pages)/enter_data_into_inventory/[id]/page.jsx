@@ -187,6 +187,9 @@ const EnterDataIntoInventory = () => {
         });
         setIsLoading(false);
         if (redirect) router.push("/inventory");
+
+        //Reset all inputs
+        setProductQuantities({});
         //router.push("/inventory");
       }
     } catch (error) {
