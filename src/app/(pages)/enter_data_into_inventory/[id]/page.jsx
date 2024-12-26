@@ -145,7 +145,7 @@ const EnterDataIntoInventory = () => {
     });
   };
 
-  const handleGenerateInventory = async (statusInvetory) => {
+  const handleGenerateInventory = async (statusInvetory, redirect) => {
     setIsLoading(true);
 
     const inventoryId = id; // ID del inventario que estás manejando
@@ -186,14 +186,15 @@ const EnterDataIntoInventory = () => {
           timer: 1500,
         });
         setIsLoading(false);
-        router.push("/inventory");
+        if (redirect) router.push("/inventory");
+        //router.push("/inventory");
       }
     } catch (error) {
       console.error("Error submitting inventory:", error);
     }
   };
 
-  const confirmated = (statusInvetory) => {
+  const confirmated = (statusInvetory, redirect=false) => {
     Swal.fire({
       title: "¿Estás seguro de esta acción?",
       showDenyButton: true,
@@ -201,7 +202,7 @@ const EnterDataIntoInventory = () => {
       confirmButtonText: "Sí",
     }).then((result) => {
       if (result.isConfirmed) {
-        handleGenerateInventory(statusInvetory);
+        handleGenerateInventory(statusInvetory, redirect);
       }
     });
   };
@@ -374,7 +375,7 @@ const EnterDataIntoInventory = () => {
               h={10}
               w={185}
               m={"0px 10px 0px 0px"}
-              onClick={() => confirmated(INVENTORY_STATUS_FINALIZED)}
+              onClick={() => confirmated(INVENTORY_STATUS_FINALIZED, true)}
               isDisabled={isButtonDisabled}
             >
               Finalizar Inventario
@@ -385,7 +386,7 @@ const EnterDataIntoInventory = () => {
               h={10}
               w={185}
               m={"0px 10px 0px 0px"}
-              onClick={() => confirmated(INVENTORY_STATUS_IN_PROCESS)}
+              onClick={() => confirmated(INVENTORY_STATUS_IN_PROCESS, false)}
               isDisabled={isButtonDisabled}
             >
               Guardar Progreso
