@@ -128,6 +128,7 @@ const EnterDataIntoInventory = () => {
         [productId]: {
           price,
           quantity,
+          order: Object.values(prevQuantities).length + 1,
         }, // Usar el productId como la clave
       };
 
@@ -159,8 +160,11 @@ const EnterDataIntoInventory = () => {
           inventory: inventoryId,
           product: productId,
           amount: parseInt(amount.quantity),
+          order: amount.order,
         };
-      });
+      }).toSorted((a, b) => a.order - b.order);
+    console.log("Payload", payload);
+    return
     try {
       const response = await apiRequest({
         endpoint: "detail_inventory/",
@@ -307,8 +311,8 @@ const EnterDataIntoInventory = () => {
                     const total = product.price * productQuantity.quantity;
 
                     return (
-                      <Tr key={index}>
-                        <Td fontSize={11}>{product.code}</Td>
+                      <Tr key={product.id}>
+                        <Td fontSize={11}>{product.code ?? product.id}</Td>
                         {/* Mostrar el código del producto */}
                         <Td fontSize={11}>{product.name}</Td>
                         <Td fontSize={11}>{product.measure_units_name}</Td>
@@ -320,6 +324,7 @@ const EnterDataIntoInventory = () => {
                         </Td>
                         <Td fontSize={11}>
                           <Input
+                            key={`input-${product.id}-${index}`}
                             type="number"
                             textAlign={"center"}
                             fontSize={12}
